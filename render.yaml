@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: shop-hoang-viet-backend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: node server/index.js
+    envVars:
+      - key: NODE_VERSION
+        value: 20.15.0
