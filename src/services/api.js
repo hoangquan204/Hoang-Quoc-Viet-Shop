@@ -29,8 +29,26 @@ function getLocalDB() {
           if (!parsed.siteInfo.email || parsed.siteInfo.email !== initialData.siteInfo.email) {
             parsed.siteInfo.email = initialData.siteInfo.email;
           }
-          saveLocalDB(parsed);
         }
+
+        // Auto-migrate product images if they contain unsplash
+        if (parsed.products && parsed.products[0]) {
+          const prod = parsed.products[0];
+          if (!prod.images || prod.images.some(img => img.includes('unsplash'))) {
+            prod.images = initialData.products[0].images;
+          }
+        }
+
+        // Auto-migrate review images if they contain unsplash
+        if (parsed.reviews) {
+          parsed.reviews.forEach(r => {
+            if (r.images && r.images.some(img => img.includes('unsplash'))) {
+              r.images = [initialData.products[0].images[0]];
+            }
+          });
+        }
+
+        saveLocalDB(parsed);
         return parsed;
       }
     }

@@ -3,11 +3,10 @@ import { Play, Pause, Volume2, VolumeX, ChevronLeft, ChevronRight, Maximize2, Sh
 
 export default function ProductMediaGallery({ product }) {
   const images = product?.images && product.images.length > 0 ? product.images : [
-    'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1000&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=1000&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=1000&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=1000&auto=format&fit=crop&q=80'
+    'https://res.cloudinary.com/dldpfpp5/image/upload/v1793624516/Gemini_Generated_Image_kj8pblkj8pblkj8p_xumnxs.png',
+    'https://res.cloudinary.com/dldpfpp5/image/upload/v1793624440/Gemini_Generated_Image_4zqfx94zqfx94zqf_yoqzoi.png',
+    'https://res.cloudinary.com/dldpfpp5/image/upload/v1793624486/Gemini_Generated_Image_xtcnzoxtcnzoxtcn_kbwnsr.png',
+    'https://res.cloudinary.com/dldpfpp5/image/upload/v1793624504/Gemini_Generated_Image_xt9vc7xt9vc7xt9v_qzw6t8.png'
   ];
 
   const videoUrl = product?.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-athlete-putting-on-his-running-shoes-42999-large.mp4';
@@ -125,7 +124,7 @@ export default function ProductMediaGallery({ product }) {
               className="w-full h-full object-cover cursor-zoom-in transition-transform duration-300 hover:scale-105"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1000&auto=format&fit=crop&q=80';
+                e.target.src = 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793624516/Gemini_Generated_Image_kj8pblkj8pblkj8p_xumnxs.png';
               }}
             />
 
@@ -203,7 +202,7 @@ export default function ProductMediaGallery({ product }) {
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=160&auto=format&fit=crop&q=80';
+                    e.target.src = 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793624516/Gemini_Generated_Image_kj8pblkj8pblkj8p_xumnxs.png';
                   }}
                 />
 

@@ -205,7 +205,7 @@ export default function ReviewsSection({ reviews, productId, onReviewAdded }) {
                         className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-slate-200 dark:border-slate-700 hover:scale-105 transition cursor-pointer"
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=160&auto=format&fit=crop&q=80';
+                          e.target.src = 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793624516/Gemini_Generated_Image_kj8pblkj8pblkj8p_xumnxs.png';
                         }}
                       />
                     ))}

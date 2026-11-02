@@ -333,7 +333,7 @@ export default function OrderForm({
               {/* Product Item Preview */}
               <div className="flex gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
                 <img
-                  src={product?.images?.[0] || 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=120&auto=format&fit=crop&q=80'}
+                  src={product?.images?.[0] || 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793624516/Gemini_Generated_Image_kj8pblkj8pblkj8p_xumnxs.png'}
                   alt="Product"
                   className="w-16 h-16 rounded-xl object-cover border border-slate-300 dark:border-slate-700 shrink-0"
                 />
