@@ -24,42 +24,39 @@ export default function Navbar({ siteInfo, onOpenAdmin, currentView, setCurrentV
       </div>
 
       {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <div className="flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-2.5">
+        <div className="flex items-center justify-between gap-3 sm:gap-4">
           
           {/* Logo & Brand Name */}
           <div 
             onClick={() => setCurrentView('shop')}
-            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group"
+            className="flex items-center gap-2.5 sm:gap-3.5 cursor-pointer group"
           >
-            <div className="relative shrink-0">
+            <div className="shrink-0 flex items-center justify-center">
               {info.logoUrl ? (
                 <img 
                   src={info.logoUrl} 
                   alt={info.siteName || 'Hoàng Quốc Việt Shop'} 
-                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-contain bg-white dark:bg-slate-800 border-2 border-rose-500 shadow-md group-hover:scale-105 transition-transform p-0.5"
+                  className="w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 object-contain drop-shadow-sm group-hover:scale-105 transition-transform"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png';
                   }}
                 />
               ) : (
-                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-rose-500 to-rose-700 flex items-center justify-center font-black text-white text-sm sm:text-base shadow-md">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-black text-white text-base shadow-md">
                   HQV
                 </div>
               )}
-              <span className="absolute -bottom-1 -right-1 bg-sky-500 text-white text-[9px] font-black px-1 rounded-sm shadow uppercase">
-                Mall
-              </span>
             </div>
 
             <div>
               {/* Hiển thị trên màn hình mobile: HQV Shop */}
-              <span className="sm:hidden text-base font-black tracking-tight text-slate-900 dark:text-white group-hover:text-rose-600 transition-colors">
+              <span className="sm:hidden text-lg font-black tracking-tight text-slate-900 dark:text-white group-hover:text-rose-600 transition-colors">
                 {info.mobileSiteName || (info.siteName?.includes('Hoàng Quốc Việt') ? 'HQV Shop' : info.siteName)}
               </span>
               {/* Hiển thị trên màn hình desktop: Hoàng Quốc Việt Shop */}
-              <span className="hidden sm:inline text-lg font-black tracking-tight text-slate-900 dark:text-white group-hover:text-rose-600 transition-colors line-clamp-1">
+              <span className="hidden sm:inline text-xl font-black tracking-tight text-slate-900 dark:text-white group-hover:text-rose-600 transition-colors line-clamp-1">
                 {info.siteName || 'Hoàng Quốc Việt Shop'}
               </span>
             </div>

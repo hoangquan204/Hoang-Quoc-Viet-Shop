@@ -60,23 +60,23 @@ export default function Footer({ siteInfo, onOpenAdmin }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-8 border-b border-slate-200 dark:border-slate-800">
           
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               {info.logoUrl ? (
                 <img 
                   src={info.logoUrl} 
                   alt={info.siteName || 'Hoàng Quốc Việt Shop'} 
-                  className="w-8 h-8 rounded-lg object-contain bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-0.5 shadow-sm"
+                  className="w-12 h-12 object-contain drop-shadow-sm"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png';
                   }}
                 />
               ) : (
-                <span className="w-7 h-7 rounded-lg bg-rose-600 flex items-center justify-center font-black text-white text-xs shadow-sm">
+                <span className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-black text-white text-xs shadow-sm">
                   HQV
                 </span>
               )}
-              <span className="text-sm font-black text-slate-900 dark:text-white">{info.siteName}</span>
+              <span className="text-base font-black text-slate-900 dark:text-white">{info.siteName}</span>
             </div>
             <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
               Gian hàng chính hãng phân phối tấm lót giày 4D# công thái học cao cấp với chất liệu PU đàn hồi, sợi Spandex và vải lưới Polyester thoáng khí, khử mùi hôi chân.
