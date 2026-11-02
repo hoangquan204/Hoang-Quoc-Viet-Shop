@@ -30,13 +30,7 @@ function getLocalDB() {
             parsed.siteInfo.email = initialData.siteInfo.email;
           }
           if (!parsed.siteInfo.orderNotifyEmail) {
-            parsed.siteInfo.orderNotifyEmail = initialData.siteInfo.orderNotifyEmail || 'lamhoangquan12c1@gmail.com';
-          }
-          if (!parsed.siteInfo.googleSheetUrl) {
-            parsed.siteInfo.googleSheetUrl = initialData.siteInfo.googleSheetUrl;
-          }
-          if (!parsed.siteInfo.googleSheetId) {
-            parsed.siteInfo.googleSheetId = initialData.siteInfo.googleSheetId;
+            parsed.siteInfo.orderNotifyEmail = 'lamhoangquan12c1@gmail.com';
           }
           if (!parsed.siteInfo.announcement || parsed.siteInfo.announcement.includes('SALE') || parsed.siteInfo.announcement.includes('GIẢM')) {
             parsed.siteInfo.announcement = initialData.siteInfo.announcement;
@@ -214,31 +208,56 @@ export const api = {
     }
   },
 
-  async sendOrderToGoogle(order) {
-    const db = getLocalDB();
-    const webhookUrl = localStorage.getItem('google_script_url') || 
-                      (db.siteInfo && db.siteInfo.googleScriptUrl) || 
-                      '';
-    if (!webhookUrl) {
-      console.log('Chưa thiết lập URL Webhook Google Apps Script. Đơn hàng lưu tại LocalStorage & Admin Panel.');
-      return false;
-    }
+  async sendOrderEmail(order) {
+    const targetEmail = 'lamhoangquan12c1@gmail.com';
+    const formatPrice = (num) => new Intl.NumberFormat('vi-VN').format(num || 0) + 'đ';
+
+    const orderTime = new Date().toLocaleString('vi-VN', {
+      timeZone: 'Asia/Ho_Chi_Minh',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+
+    const emailPayload = {
+      _subject: `🔥 [ĐƠN HÀNG MỚI] #${order.id || 'ORD-001'} - Khách: ${order.customerName} (${order.phone}) - ${formatPrice(order.totalAmount)}`,
+      _template: 'table',
+      _captcha: 'false',
+      'Mã Đơn Hàng': order.id || 'Chưa có',
+      'Thời Gian Đặt': orderTime,
+      'Họ Và Tên Khách Hàng': order.customerName || 'Khách mua lẻ',
+      'Số Điện Thoại Liên Hệ': order.phone || '',
+      'Địa Chỉ Giao Hàng': order.address || '',
+      'Tỉnh / Thành Phố': order.city || '',
+      'Tên Sản Phẩm': order.productName || 'Tấm lót giày 4D# Chính Hãng',
+      'Phân Loại': order.variantTitle || '',
+      'Kích Thước (Size)': order.size || '',
+      'Màu Sắc': order.color || '',
+      'Số Lượng': `${order.quantity || 1} đôi`,
+      'Đơn Giá': formatPrice(order.unitPrice),
+      'Tiền Hàng': formatPrice(order.subtotal || (order.unitPrice * (order.quantity || 1))),
+      'Phí Vận Chuyển': 'LIÊN HỆ',
+      'TỔNG THANH TOÁN (COD)': formatPrice(order.totalAmount),
+      'Ghi Chú Cho Shipper': order.notes || 'Không có ghi chú'
+    };
 
     try {
-      // Sử dụng mode 'no-cors' và Content-Type 'text/plain;charset=utf-8' để gửi an toàn từ trình duyệt
-      await fetch(webhookUrl, {
+      const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        body: JSON.stringify(order)
+        body: JSON.stringify(emailPayload)
       });
-      console.log('✅ Đã gửi đơn hàng đến Google Apps Script (Thêm vào Google Sheet & Gửi email đến lamhoangquan12c1@gmail.com)');
-      return true;
-    } catch (e) {
-      console.warn('⚠️ Lỗi khi gửi dữ liệu lên Google Apps Script:', e);
-      return false;
+      const result = await response.json();
+      console.log('✅ FormSubmit gửi email đơn hàng thành công:', result);
+      return result;
+    } catch (err) {
+      console.warn('⚠️ Lỗi gửi email FormSubmit:', err);
     }
   },
 
@@ -271,8 +290,8 @@ export const api = {
       saveLocalDB(db);
     }
 
-    // Tự động đẩy đơn hàng vào Google Sheet & gửi Email đẹp mắt đến lamhoangquan12c1@gmail.com
-    this.sendOrderToGoogle(resultOrder).catch(() => {});
+    // Tự động gửi email thông báo đơn hàng trực tiếp đến lamhoangquan12c1@gmail.com
+    this.sendOrderEmail(resultOrder).catch(() => {});
 
     return { success: true, order: resultOrder };
   },
