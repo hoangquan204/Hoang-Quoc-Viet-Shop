@@ -80,6 +80,7 @@ export default function OrderForm({
       subtotal,
       discountAmount: 0,
       shippingFee,
+      shippingFeeText: 'LIÊN HỆ',
       totalAmount: finalTotal,
       finalAmount: finalTotal,
       customerName: formData.customerName.trim(),

@@ -29,6 +29,15 @@ function getLocalDB() {
           if (!parsed.siteInfo.email || parsed.siteInfo.email !== initialData.siteInfo.email) {
             parsed.siteInfo.email = initialData.siteInfo.email;
           }
+          if (!parsed.siteInfo.orderNotifyEmail) {
+            parsed.siteInfo.orderNotifyEmail = initialData.siteInfo.orderNotifyEmail || 'lamhoangquan12c1@gmail.com';
+          }
+          if (!parsed.siteInfo.googleSheetUrl) {
+            parsed.siteInfo.googleSheetUrl = initialData.siteInfo.googleSheetUrl;
+          }
+          if (!parsed.siteInfo.googleSheetId) {
+            parsed.siteInfo.googleSheetId = initialData.siteInfo.googleSheetId;
+          }
           if (!parsed.siteInfo.announcement || parsed.siteInfo.announcement.includes('SALE') || parsed.siteInfo.announcement.includes('GIẢM')) {
             parsed.siteInfo.announcement = initialData.siteInfo.announcement;
           }
@@ -205,7 +214,36 @@ export const api = {
     }
   },
 
+  async sendOrderToGoogle(order) {
+    const db = getLocalDB();
+    const webhookUrl = localStorage.getItem('google_script_url') || 
+                      (db.siteInfo && db.siteInfo.googleScriptUrl) || 
+                      '';
+    if (!webhookUrl) {
+      console.log('Chưa thiết lập URL Webhook Google Apps Script. Đơn hàng lưu tại LocalStorage & Admin Panel.');
+      return false;
+    }
+
+    try {
+      // Sử dụng mode 'no-cors' và Content-Type 'text/plain;charset=utf-8' để gửi an toàn từ trình duyệt
+      await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(order)
+      });
+      console.log('✅ Đã gửi đơn hàng đến Google Apps Script (Thêm vào Google Sheet & Gửi email đến lamhoangquan12c1@gmail.com)');
+      return true;
+    } catch (e) {
+      console.warn('⚠️ Lỗi khi gửi dữ liệu lên Google Apps Script:', e);
+      return false;
+    }
+  },
+
   async createOrder(data) {
+    let resultOrder = null;
     try {
       const res = await fetch(`${API_BASE}/orders`, {
         method: 'POST',
@@ -213,20 +251,30 @@ export const api = {
         body: JSON.stringify(data),
         signal: AbortSignal.timeout(3000)
       });
-      if (!res.ok) throw new Error('API create order failed');
-      return await res.json();
+      if (res.ok) {
+        const json = await res.json();
+        resultOrder = json.order;
+      }
     } catch (err) {
+      // server offline
+    }
+
+    if (!resultOrder) {
       const db = getLocalDB();
-      const newOrder = {
+      resultOrder = {
         ...data,
-        id: `ORD-${Date.now().toString().slice(-6)}`,
-        createdAt: new Date().toISOString(),
+        id: data.id || `ORD-${Date.now().toString().slice(-6)}`,
+        createdAt: data.createdAt || new Date().toISOString(),
         status: 'pending'
       };
-      db.orders = [newOrder, ...(db.orders || [])];
+      db.orders = [resultOrder, ...(db.orders || [])];
       saveLocalDB(db);
-      return { success: true, order: newOrder };
     }
+
+    // Tự động đẩy đơn hàng vào Google Sheet & gửi Email đẹp mắt đến lamhoangquan12c1@gmail.com
+    this.sendOrderToGoogle(resultOrder).catch(() => {});
+
+    return { success: true, order: resultOrder };
   },
 
   async updateOrderStatus(id, status) {

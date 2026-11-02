@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { 
   Lock, Globe, Image, Video, Package, ShoppingBag, 
   Star, Plus, Trash2, Save, CheckCircle, AlertCircle, 
-  Eye, ArrowLeft, RefreshCw, Phone, Sun, Moon, LogOut
+  Eye, ArrowLeft, RefreshCw, Phone, Sun, Moon, LogOut,
+  FileSpreadsheet, Mail, ExternalLink, Send, Copy, Check, Code, HelpCircle, X
 } from 'lucide-react';
 import { api } from '../services/api';
 
@@ -32,7 +33,7 @@ export default function AdminPanel({
   const [saveSuccessMsg, setSaveSuccessMsg] = useState('');
 
   // Edit Site Form State
-  const [siteForm, setSiteForm] = useState(() => siteInfo || {
+  const [siteForm, setSiteForm] = useState(() => ({
     siteName: 'Hoàng Quốc Việt Shop',
     mobileSiteName: 'HQV Shop',
     tagline: 'Lót Giày Chất Lượng - Siêu Êm Giảm Đau Mỏi Chân',
@@ -41,8 +42,17 @@ export default function AdminPanel({
     hotline: '0971.250.891',
     zalo: '0356280381',
     email: 'haimyminhquan2123@gmail.com',
-    address: 'Hoàng Quốc Việt Shop - Tổng Kho Phụ Kiện Giày - Hà Nội & TP. Hồ Chí Minh'
-  });
+    address: 'Hoàng Quốc Việt Shop - Tổng Kho Phụ Kiện Giày - Hà Nội & TP. Hồ Chí Minh',
+    googleSheetUrl: 'https://docs.google.com/spreadsheets/d/1besF2yiEShlWJWFEhdJnntWWex7llAXDeTC0-QO4fHk/edit?usp=sharing',
+    orderNotifyEmail: 'lamhoangquan12c1@gmail.com',
+    googleScriptUrl: localStorage.getItem('google_script_url') || '',
+    ...(siteInfo || {})
+  }));
+
+  const [googleScriptModalOpen, setGoogleScriptModalOpen] = useState(false);
+  const [copiedScript, setCopiedScript] = useState(false);
+  const [isTestingWebhook, setIsTestingWebhook] = useState(false);
+  const [testResultMsg, setTestResultMsg] = useState('');
 
   // Edit Product State
   const [selectedProductIndex, setSelectedProductIndex] = useState(0);
@@ -87,15 +97,60 @@ export default function AdminPanel({
   // Save Site Info
   const handleSaveSiteInfo = async (e) => {
     e.preventDefault();
+    if (siteForm.googleScriptUrl) {
+      localStorage.setItem('google_script_url', siteForm.googleScriptUrl.trim());
+    }
     try {
       const res = await api.updateSiteInfo(siteForm);
       if (res && res.success) {
         setSiteInfo(res.siteInfo);
-        showToast('Đã lưu cấu hình website và logo thành công!');
+        showToast('Đã lưu cấu hình website và cài đặt Google Sheet thành công!');
       }
     } catch (err) {
       setSiteInfo(siteForm);
       showToast('Đã cập nhật cấu hình website thành công!');
+    }
+  };
+
+  // Test Google Script Webhook
+  const handleTestWebhook = async () => {
+    const url = siteForm.googleScriptUrl || localStorage.getItem('google_script_url');
+    if (!url) {
+      alert('Vui lòng nhập đường link URL Web App Google Apps Script trước khi gửi thử!');
+      return;
+    }
+    setIsTestingWebhook(true);
+    setTestResultMsg('');
+    const sampleOrder = {
+      id: 'TEST-' + Math.floor(100000 + Math.random() * 900000),
+      customerName: 'Khách Hàng Thử Nghiệm (Test)',
+      phone: '0971250891',
+      address: '123 Đường Cầu Giấy, Phường Dịch Vọng',
+      city: 'Hà Nội',
+      productName: 'Tấm lót giày 4D# Chính Hãng',
+      variantTitle: 'Bản Tiêu Chuẩn 4D (Test)',
+      size: '41',
+      color: 'Đen',
+      quantity: 2,
+      unitPrice: 35000,
+      subtotal: 70000,
+      shippingFeeText: 'LIÊN HỆ',
+      totalAmount: 70000,
+      notes: 'Đơn hàng test kiểm tra tự động Google Sheet và Email lamhoangquan12c1@gmail.com',
+      createdAt: new Date().toISOString()
+    };
+    try {
+      await fetch(url.trim(), {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(sampleOrder)
+      });
+      setTestResultMsg('✅ Đã gửi đơn test! Bạn hãy mở file Google Sheet và hộp thư lamhoangquan12c1@gmail.com để kiểm tra nhé.');
+    } catch (err) {
+      setTestResultMsg('⚠️ Lỗi gửi đơn test: ' + err.message);
+    } finally {
+      setIsTestingWebhook(false);
     }
   };
 
@@ -550,6 +605,104 @@ export default function AdminPanel({
                 />
               </div>
 
+              {/* GOOGLE SHEET & EMAIL AUTOMATION INTEGRATION */}
+              <div className="mt-6 p-5 rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50 to-sky-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-2 border-emerald-500/30 dark:border-emerald-500/20 shadow-sm space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-200 dark:border-emerald-900/50 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-md shrink-0">
+                      <FileSpreadsheet size={22} />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                        <span>Tự Động Đẩy Đơn Hàng Vào Google Sheet & Gửi Email</span>
+                        <span className="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Tự động 100%</span>
+                      </h4>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">
+                        Khách nhấn đặt hàng trên website sẽ tự động lưu vào Sheet và gửi thư chi tiết tới email của bạn.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setGoogleScriptModalOpen(true)}
+                      className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition shadow active:scale-95"
+                    >
+                      <Code size={14} />
+                      <span>Xem Code & Hướng Dẫn</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Two info badges */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-2 shadow-sm">
+                    <div>
+                      <span className="text-[11px] text-slate-500 font-semibold block">File Google Sheet đang kết nối:</span>
+                      <span className="font-bold text-slate-900 dark:text-white line-clamp-1 mt-0.5">
+                        Tấm lót giày 4D - Đơn Hàng Trực Tuyến
+                      </span>
+                    </div>
+                    <a
+                      href="https://docs.google.com/spreadsheets/d/1besF2yiEShlWJWFEhdJnntWWex7llAXDeTC0-QO4fHk/edit?usp=sharing"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 flex items-center gap-1 bg-emerald-100 dark:bg-emerald-950/60 hover:bg-emerald-200 text-emerald-800 dark:text-emerald-300 font-bold px-2.5 py-1.5 rounded-lg transition"
+                    >
+                      <ExternalLink size={12} />
+                      <span>Mở Sheet</span>
+                    </a>
+                  </div>
+
+                  <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-2 shadow-sm">
+                    <div>
+                      <span className="text-[11px] text-slate-500 font-semibold block">Email nhận thông báo tức thì:</span>
+                      <span className="font-bold text-rose-600 dark:text-rose-400 text-sm mt-0.5 block">
+                        lamhoangquan12c1@gmail.com
+                      </span>
+                    </div>
+                    <span className="shrink-0 flex items-center gap-1 bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 font-bold px-2.5 py-1.5 rounded-lg text-[11px]">
+                      <Mail size={12} />
+                      <span>Đã kích hoạt</span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Webhook Input Field */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
+                    Đường dẫn Web App Google Apps Script (Webhook URL):
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="url"
+                      placeholder="Dán URL Web App (Ví dụ: https://script.google.com/macros/s/AKfycb.../exec)"
+                      value={siteForm.googleScriptUrl || ''}
+                      onChange={(e) => setSiteForm(prev => ({ ...prev, googleScriptUrl: e.target.value }))}
+                      className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2 text-xs text-slate-900 dark:text-white outline-none font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleTestWebhook}
+                      disabled={isTestingWebhook}
+                      className="shrink-0 flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-black dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow active:scale-95 disabled:opacity-50"
+                    >
+                      <Send size={13} />
+                      <span>{isTestingWebhook ? 'Đang gửi test...' : 'Gửi Đơn Test'}</span>
+                    </button>
+                  </div>
+                  {testResultMsg && (
+                    <p className="text-xs font-semibold mt-2 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                      {testResultMsg}
+                    </p>
+                  )}
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 italic">
+                    * Nếu chưa có URL, bạn bấm vào nút <strong>"Xem Code & Hướng Dẫn"</strong> ở trên để sao chép mã dán vào Google Sheet trong 1 phút.
+                  </p>
+                </div>
+              </div>
+
               <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end">
                 <button
                   type="submit"
@@ -970,6 +1123,314 @@ export default function AdminPanel({
         )}
 
       </main>
+
+      {/* GOOGLE APPS SCRIPT INSTRUCTION MODAL */}
+      {googleScriptModalOpen && (
+        <div 
+          className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 animate-fade-in select-none"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setGoogleScriptModalOpen(false);
+          }}
+        >
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            
+            {/* Header */}
+            <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4 sm:p-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner">
+                  <FileSpreadsheet size={22} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-black">Hướng Dẫn Kết Nối Google Sheet & Gửi Email Tự Động</h3>
+                  <p className="text-xs text-emerald-100">
+                    Ghi đơn vào file Sheet & Gửi email đến: <strong>lamhoangquan12c1@gmail.com</strong>
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setGoogleScriptModalOpen(false)}
+                className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-white transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+              
+              {/* Steps Overview */}
+              <div className="space-y-2.5">
+                <div className="flex gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0">1</span>
+                  <div>
+                    <strong className="text-slate-900 dark:text-white block font-bold">Mở Google Apps Script trong Google Sheet:</strong>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                      Mở file Google Sheet của bạn{' '}
+                      <a 
+                        href="https://docs.google.com/spreadsheets/d/1besF2yiEShlWJWFEhdJnntWWex7llAXDeTC0-QO4fHk/edit?usp=sharing" 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="text-emerald-600 dark:text-emerald-400 font-bold underline inline-flex items-center gap-1"
+                      >
+                        [Mở Sheet tại đây ↗]
+                      </a>
+                      , trên thanh Menu chọn: <strong>Tiện ích mở rộng (Extensions)</strong> ➔ chọn <strong>Apps Script</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0">2</span>
+                  <div>
+                    <strong className="text-slate-900 dark:text-white block font-bold">Dán toàn bộ mã nguồn:</strong>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                      Xóa hết các dòng chữ có sẵn trong file <code>Code.gs</code>, bấm nút <strong>"Sao Chép Mã Nguồn"</strong> ở bên dưới và dán vào, sau đó nhấn biểu tượng <strong>Lưu 💾 (Ctrl + S)</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0">3</span>
+                  <div>
+                    <strong className="text-slate-900 dark:text-white block font-bold">Triển khai thành Web App:</strong>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                      Bấm nút màu xanh <strong>Triển khai (Deploy)</strong> ở góc trên bên phải ➔ <strong>Tùy chọn triển khai mới (New deployment)</strong> ➔ Chọn loại: <strong>Ứng dụng web (Web app)</strong>.
+                      <br />• Thực thi dưới dạng: <strong>Tôi (lamhoangquan12c1@gmail.com)</strong>
+                      <br />• Ai có quyền truy cập: <strong className="text-rose-600 dark:text-rose-400">Bất kỳ ai (Anyone)</strong> *(Bắt buộc chọn Bất kỳ ai để website có thể gửi đơn hàng)*
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0">4</span>
+                  <div>
+                    <strong className="text-slate-900 dark:text-white block font-bold">Lấy URL và dán vào Website:</strong>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                      Bấm <strong>Triển khai</strong>, Google sẽ yêu cầu cấp quyền (chọn Nâng cao ➔ Đi tới ứng dụng không an toàn ➔ Cho phép). Copy đường link <strong>URL ứng dụng web</strong> (có đuôi <code>/exec</code>), dán vào ô Webhook URL trên trang Admin và bấm <strong>Lưu Cập Nhật</strong>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Code Box with Copy Button */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <Code size={14} className="text-emerald-600" />
+                    <span>Mã Nguồn Google Apps Script (Code.gs)</span>
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const code = `/**
+ * HOÀNG QUỐC VIỆT SHOP - GOOGLE APPS SCRIPT WEBHOOK ĐẶT HÀNG TỰ ĐỘNG
+ * Ghi vào Sheet: 1besF2yiEShlWJWFEhdJnntWWex7llAXDeTC0-QO4fHk
+ * Gửi email đến: lamhoangquan12c1@gmail.com
+ */
+var CONFIG = {
+  SHEET_ID: "1besF2yiEShlWJWFEhdJnntWWex7llAXDeTC0-QO4fHk",
+  EMAIL_RECEIVER: "lamhoangquan12c1@gmail.com",
+  SHOP_NAME: "Hoàng Quốc Việt Shop",
+  SHOP_HOTLINE: "0971.250.891",
+  SHOP_ZALO: "0356.280.381",
+  SHEET_URL: "https://docs.google.com/spreadsheets/d/1besF2yiEShlWJWFEhdJnntWWex7llAXDeTC0-QO4fHk/edit?usp=sharing"
+};
+
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "active",
+    message: "Webhook Hoàng Quốc Việt Shop đang hoạt động bình thường!",
+    targetEmail: CONFIG.EMAIL_RECEIVER,
+    sheetUrl: CONFIG.SHEET_URL
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    var rawData = {};
+    if (e && e.postData && e.postData.contents) {
+      try { rawData = JSON.parse(e.postData.contents); } catch (err) { rawData = e.parameter || {}; }
+    } else if (e && e.parameter) {
+      rawData = e.parameter;
+    }
+
+    var now = new Date();
+    var timeStr = Utilities.formatDate(now, "GMT+7", "dd/MM/yyyy HH:mm:ss");
+    var orderId = rawData.id || ("ORD-" + now.getTime().toString().slice(-6));
+    var customerName = (rawData.customerName || "Khách mua lẻ").trim();
+    var phone = (rawData.phone || rawData.customerPhone || "").trim();
+    var address = (rawData.address || rawData.customerAddress || "").trim();
+    var city = (rawData.city || "Toàn quốc").trim();
+    var notes = (rawData.notes || "Không có").trim();
+
+    var productName = rawData.productName || "Tấm lót giày 4D# Chính Hãng";
+    var variantTitle = rawData.variantTitle || "Bản Tiêu Chuẩn 4D";
+    var size = rawData.size || "39";
+    var color = rawData.color || "Đen";
+    var quantity = Number(rawData.quantity || 1);
+    var unitPrice = Number(rawData.unitPrice || 35000);
+    var subtotal = Number(rawData.subtotal || (unitPrice * quantity));
+    var totalAmount = Number(rawData.totalAmount || rawData.finalAmount || subtotal);
+    var shippingFeeText = rawData.shippingFeeText || "LIÊN HỆ";
+    var status = "Chờ xác nhận";
+
+    function formatVND(amount) {
+      return Number(amount).toLocaleString("vi-VN") + "đ";
+    }
+
+    // 1. GHI VÀO GOOGLE SHEET
+    var ss;
+    try { ss = SpreadsheetApp.openById(CONFIG.SHEET_ID); } catch (sheetErr) { ss = SpreadsheetApp.getActiveSpreadsheet(); }
+    var sheet = ss.getActiveSheet();
+
+    if (sheet.getLastRow() === 0) {
+      var headers = [
+        "Mã Đơn Hàng", "Thời Gian Đặt", "Họ Tên Khách Hàng", "Số Điện Thoại",
+        "Địa Chỉ Giao Hàng", "Tỉnh / Thành Phố", "Tên Sản Phẩm", "Phân Loại",
+        "Size Giày", "Màu Sắc", "Số Lượng", "Đơn Giá", "Tổng Tiền",
+        "Phí Vận Chuyển", "Ghi Chú Shipper", "Trạng Thái"
+      ];
+      sheet.appendRow(headers);
+      var headerRange = sheet.getRange(1, 1, 1, headers.length);
+      headerRange.setBackground("#e11d48").setFontColor("#ffffff").setFontWeight("bold").setHorizontalAlignment("center").setVerticalAlignment("middle");
+      sheet.setRowHeight(1, 35);
+      sheet.setFrozenRows(1);
+    }
+
+    sheet.appendRow([
+      orderId, timeStr, customerName, "'" + phone, address, city,
+      productName, variantTitle, size, color, quantity,
+      formatVND(unitPrice), formatVND(totalAmount), shippingFeeText, notes, status
+    ]);
+
+    var newRow = sheet.getLastRow();
+    sheet.setRowHeight(newRow, 28);
+    sheet.getRange(newRow, 1, 1, 16).setVerticalAlignment("middle");
+    sheet.getRange(newRow, 1).setFontWeight("bold").setFontColor("#e11d48");
+    sheet.getRange(newRow, 4).setHorizontalAlignment("left");
+    sheet.getRange(newRow, 11).setHorizontalAlignment("center");
+    sheet.getRange(newRow, 13).setFontWeight("bold");
+    sheet.getRange(newRow, 16).setBackground("#fef3c7").setFontColor("#b45309").setFontWeight("bold").setHorizontalAlignment("center");
+
+    // 2. GỬI EMAIL THÔNG BÁO ĐẾN lamhoangquan12c1@gmail.com
+    var emailSubject = "🔥 [ĐƠN HÀNG MỚI] " + orderId + " - " + customerName + " (" + phone + ") - " + formatVND(totalAmount);
+    var emailHtml = \`
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:20px 10px;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1e293b;">
+  <div style="max-width:620px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,0.08);border:1px solid #e2e8f0;">
+    <div style="background:linear-gradient(135deg,#e11d48 0%,#be123c 100%);padding:28px 24px;text-align:center;color:#fff;">
+      <div style="display:inline-block;background:rgba(255,255,255,0.2);padding:4px 14px;border-radius:20px;font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:8px;">
+        ✨ Thông Báo Đơn Hàng Mới Từ Website
+      </div>
+      <h1 style="margin:0;font-size:22px;font-weight:900;">\${CONFIG.SHOP_NAME}</h1>
+      <p style="margin:6px 0 0;font-size:12px;opacity:0.9;">Mã đơn: <strong style="background:#fff;color:#e11d48;padding:2px 8px;border-radius:6px;font-family:monospace;">\${orderId}</strong></p>
+    </div>
+    <div style="padding:22px 18px;">
+      <div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:12px;padding:12px 16px;margin-bottom:18px;color:#065f46;font-size:13px;font-weight:700;">
+        📦 Có 01 đơn hàng mới đang chờ bạn xác nhận và đóng gói gửi hàng!
+      </div>
+      <div style="background:#f8fafc;border-radius:14px;padding:16px;border:1px solid #e2e8f0;margin-bottom:18px;">
+        <h3 style="margin:0 0 10px;font-size:13px;text-transform:uppercase;color:#64748b;font-weight:800;border-bottom:1px solid #e2e8f0;padding-bottom:6px;">
+          👤 Thông Tin Người Nhận
+        </h3>
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <tr><td style="padding:5px 0;color:#64748b;width:120px;">Khách hàng:</td><td style="padding:5px 0;font-weight:700;color:#0f172a;">\${customerName}</td></tr>
+          <tr><td style="padding:5px 0;color:#64748b;">Số điện thoại:</td><td style="padding:5px 0;"><a href="tel:\${phone}" style="color:#e11d48;font-weight:900;font-size:15px;text-decoration:none;background:#ffe4e6;padding:3px 10px;border-radius:8px;display:inline-block;">📞 \${phone} (Bấm gọi ngay)</a></td></tr>
+          <tr><td style="padding:5px 0;color:#64748b;">Địa chỉ giao:</td><td style="padding:5px 0;font-weight:600;">\${address}</td></tr>
+          <tr><td style="padding:5px 0;color:#64748b;">Tỉnh thành:</td><td style="padding:5px 0;font-weight:600;">\${city}</td></tr>
+          <tr><td style="padding:5px 0;color:#64748b;">Ghi chú:</td><td style="padding:5px 0;color:#b45309;font-weight:600;font-style:italic;">\${notes}</td></tr>
+          <tr><td style="padding:5px 0;color:#64748b;">Thời gian:</td><td style="padding:5px 0;color:#64748b;">\${timeStr}</td></tr>
+        </table>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:16px;border:1px solid #e2e8f0;margin-bottom:20px;">
+        <h3 style="margin:0 0 10px;font-size:13px;text-transform:uppercase;color:#64748b;font-weight:800;border-bottom:1px solid #e2e8f0;padding-bottom:6px;">
+          🛒 Chi Tiết Sản Phẩm
+        </h3>
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <tr style="background:#f1f5f9;color:#475569;"><th style="padding:8px;text-align:left;">Sản Phẩm</th><th style="padding:8px;text-align:center;">Size/Màu</th><th style="padding:8px;text-align:center;">SL</th><th style="padding:8px;text-align:right;">Thành Tiền</th></tr>
+          <tr>
+            <td style="padding:10px 8px;border-bottom:1px solid #f1f5f9;"><strong style="color:#0f172a;">\${productName}</strong><div style="color:#e11d48;font-size:11px;font-weight:600;">\${variantTitle}</div></td>
+            <td style="padding:10px 8px;border-bottom:1px solid #f1f5f9;text-align:center;"><span style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-weight:600;">\${size} • \${color}</span></td>
+            <td style="padding:10px 8px;border-bottom:1px solid #f1f5f9;text-align:center;font-weight:700;">x\${quantity}</td>
+            <td style="padding:10px 8px;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:700;">\${formatVND(unitPrice * quantity)}</td>
+          </tr>
+        </table>
+        <div style="margin-top:12px;padding-top:8px;border-top:1px dashed #e2e8f0;">
+          <table style="width:100%;font-size:13px;border-collapse:collapse;">
+            <tr><td style="padding:4px 0;color:#64748b;">Tiền hàng (\${quantity} đôi):</td><td style="padding:4px 0;text-align:right;font-weight:600;">\${formatVND(subtotal)}</td></tr>
+            <tr><td style="padding:4px 0;color:#64748b;">Phí vận chuyển:</td><td style="padding:4px 0;text-align:right;font-weight:800;color:#e11d48;">\${shippingFeeText}</td></tr>
+            <tr style="border-top:1px solid #e2e8f0;"><td style="padding:10px 0 2px;font-size:14px;font-weight:800;">TỔNG THANH TOÁN:</td><td style="padding:10px 0 2px;text-align:right;font-size:18px;font-weight:900;color:#e11d48;">\${formatVND(totalAmount)}</td></tr>
+          </table>
+        </div>
+      </div>
+      <div style="text-align:center;margin:20px 0 5px;">
+        <a href="tel:\${phone}" style="display:inline-block;background:#059669;color:#fff;text-decoration:none;padding:10px 20px;border-radius:10px;font-weight:800;font-size:13px;margin-right:8px;">📞 Gọi Cho Khách Ngay</a>
+        <a href="\${CONFIG.SHEET_URL}" target="_blank" style="display:inline-block;background:#0284c7;color:#fff;text-decoration:none;padding:10px 20px;border-radius:10px;font-weight:800;font-size:13px;">📊 Mở Google Sheet</a>
+      </div>
+    </div>
+    <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:14px;text-align:center;font-size:11px;color:#64748b;">
+      \${CONFIG.SHOP_NAME} • Hotline: \${CONFIG.SHOP_HOTLINE} • Zalo: \${CONFIG.SHOP_ZALO}
+    </div>
+  </div>
+</body>
+</html>\`;
+
+    MailApp.sendEmail({ to: CONFIG.EMAIL_RECEIVER, subject: emailSubject, htmlBody: emailHtml });
+
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true, message: "Đã thêm vào Sheet và gửi email thành công!", orderId: orderId
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() })).setMimeType(ContentService.MimeType.JSON);
+  }
+}`;
+                      navigator.clipboard.writeText(code);
+                      setCopiedScript(true);
+                      setTimeout(() => setCopiedScript(false), 3000);
+                    }}
+                    className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg transition active:scale-95 shadow"
+                  >
+                    {copiedScript ? <Check size={14} /> : <Copy size={14} />}
+                    <span>{copiedScript ? 'Đã Sao Chép Code!' : 'Sao Chép Toàn Bộ Mã Nguồn'}</span>
+                  </button>
+                </div>
+
+                <div className="bg-slate-900 text-emerald-300 p-3.5 rounded-xl font-mono text-[11px] leading-relaxed max-h-48 overflow-y-auto border border-slate-800">
+                  <p className="text-slate-400 mb-1">// Dán toàn bộ mã nguồn này vào trình biên tập Apps Script trong Google Sheet</p>
+                  <pre className="text-slate-200">
+{`var CONFIG = {
+  SHEET_ID: "1besF2yiEShlWJWFEhdJnntWWex7llAXDeTC0-QO4fHk",
+  EMAIL_RECEIVER: "lamhoangquan12c1@gmail.com",
+  SHOP_NAME: "Hoàng Quốc Việt Shop",
+  SHOP_HOTLINE: "0971.250.891",
+  SHOP_ZALO: "0356.280.381"
+};
+
+function doPost(e) { ... }`}
+                  </pre>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setGoogleScriptModalOpen(false)}
+                className="bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold px-6 py-2 rounded-xl text-xs transition"
+              >
+                Đã Hiểu & Đóng Lại
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }

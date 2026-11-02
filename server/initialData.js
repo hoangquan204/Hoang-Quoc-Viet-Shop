@@ -10,6 +10,10 @@ export const initialData = {
     email: "haimyminhquan2123@gmail.com",
     address: "Hoàng Quốc Việt Shop - Tổng Kho Phụ Kiện Giày - Hà Nội & TP. Hồ Chí Minh",
     guaranteeText: "Cam kết chính hãng 100% • Đổi trả 7 ngày miễn phí • Kiểm tra hàng trước khi thanh toán",
+    googleSheetUrl: "https://docs.google.com/spreadsheets/d/1besF2yiEShlWJWFEhdJnntWWex7llAXDeTC0-QO4fHk/edit?usp=sharing",
+    googleSheetId: "1besF2yiEShlWJWFEhdJnntWWex7llAXDeTC0-QO4fHk",
+    orderNotifyEmail: "lamhoangquan12c1@gmail.com",
+    googleScriptUrl: "",
     vouchers: []
   },
   products: [
