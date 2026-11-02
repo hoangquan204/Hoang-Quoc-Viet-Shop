@@ -27,8 +27,8 @@ export default function MobileStickyBar({ onBuyNow, siteInfo }) {
         >
           <Zap size={18} className="fill-white" />
           <div className="text-left leading-tight">
-            <span className="block text-xs uppercase tracking-wider">MUA NGAY - FREESHIP</span>
-            <span className="block text-[10px] text-yellow-300 font-bold">Giá chỉ từ 25.000đ</span>
+            <span className="block text-xs uppercase tracking-wider">ĐẶT HÀNG NGAY</span>
+            <span className="block text-[10px] text-yellow-300 font-bold">Chính Hãng • Giao Toàn Quốc</span>
           </div>
         </a>
 

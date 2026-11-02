@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Star, ShieldCheck, Flame, Clock, Ticket, Check, Scissors, AlertTriangle, Info, ChevronRight } from 'lucide-react';
+import React from 'react';
+import { Star, ShieldCheck, Check, Scissors, AlertTriangle, Info, ChevronRight, PackageCheck } from 'lucide-react';
 
 export default function ProductInfo({ 
   product, 
@@ -14,25 +14,6 @@ export default function ProductInfo({
   onOpenSizeGuide,
   onBuyNow
 }) {
-  // Countdown Timer for Flash Sale
-  const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 45, seconds: 18 });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        }
-        return { hours: 3, minutes: 0, seconds: 0 };
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   const variants = product?.variants || [];
   const currentVariant = selectedVariant || variants[0] || {};
 
@@ -47,23 +28,19 @@ export default function ProductInfo({
     return new Intl.NumberFormat('vi-VN').format(num || 0) + 'đ';
   };
 
-  const discountPercent = currentVariant.originalPrice 
-    ? Math.round((1 - (currentVariant.price / currentVariant.originalPrice)) * 100) 
-    : 45;
-
   return (
     <div className="flex flex-col gap-5 bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md">
       
       {/* Product Title & Badge */}
       <div>
         <div className="flex flex-wrap items-center gap-2 mb-2">
-          <span className="bg-rose-600 text-white text-[11px] font-black px-2 py-0.5 rounded shadow flex items-center gap-1">
-            <Flame size={12} className="fill-white" /> SIÊU SALE HÔM NAY
+          <span className="bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 text-[11px] font-bold px-2.5 py-0.5 rounded">
+            Chính Hãng 100%
           </span>
-          <span className="bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 text-[11px] font-bold px-2 py-0.5 rounded">
-            Top #1 Bán Chạy Phụ Kiện Giày
+          <span className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold px-2.5 py-0.5 rounded">
+            Đệm Khí Công Thái Học 4D
           </span>
-          <span className="text-slate-600 dark:text-slate-400 text-xs">Mã SP: 4D-INSOLE-2026</span>
+          <span className="text-slate-500 dark:text-slate-400 text-xs">Mã SP: 4D-INSOLE</span>
         </div>
 
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
@@ -89,82 +66,50 @@ export default function ProductInfo({
           </span>
           <span className="text-slate-300 dark:text-slate-700">|</span>
           <span className="text-slate-600 dark:text-slate-300">
-            <strong className="text-rose-600 dark:text-rose-400">{(product?.soldCount || 28650).toLocaleString()}+</strong> Đã bán
+            <strong className="text-slate-900 dark:text-white">{(product?.soldCount || 28650).toLocaleString()}+</strong> Đã bán
           </span>
         </div>
       </div>
 
-      {/* Flash Sale Banner & Price Box */}
-      <div className="bg-rose-50/70 dark:bg-slate-950/60 border border-rose-200 dark:border-rose-900/60 rounded-2xl p-4 shadow-sm relative overflow-hidden">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Product Price & Specification Box */}
+      <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Price */}
           <div>
-            <div className="flex items-baseline gap-2.5">
+            <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+              Giá niêm yết:
+            </div>
+            <div className="flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-500 tracking-tight">
                 {formatPrice(currentVariant.price || 35000)}
               </span>
-              {currentVariant.originalPrice && (
-                <span className="text-sm text-slate-400 line-through">
-                  {formatPrice(currentVariant.originalPrice)}
-                </span>
-              )}
-              <span className="bg-rose-600 text-white text-[11px] font-black px-1.5 py-0.5 rounded">
-                -{discountPercent}%
-              </span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">/ 1 đôi</span>
             </div>
             
             {/* Price Ranges Note from Customer Request */}
-            <div className="text-xs text-slate-700 dark:text-slate-300 mt-1 flex flex-col gap-0.5">
-              <div>
+            <div className="text-xs text-slate-700 dark:text-slate-300 mt-2.5 flex flex-col gap-1">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-sky-500"></span>
                 <span className="font-bold text-sky-700 dark:text-sky-400">Lót giày nam:</span> 35.000 - 50.000đ (Size: 38-47)
               </div>
-              <div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-rose-500"></span>
                 <span className="font-bold text-rose-700 dark:text-rose-300">Lót giày nữ:</span> 25.000 - 45.000đ (Size: 35-41)
               </div>
             </div>
           </div>
 
-          {/* Countdown Clock */}
-          <div className="flex items-center gap-2 bg-white/80 dark:bg-slate-900 border border-rose-200 dark:border-slate-800 px-3 py-2 rounded-xl shadow-sm">
-            <Clock size={16} className="text-rose-600 animate-pulse" />
-            <div className="text-right">
-              <p className="text-[10px] text-slate-600 dark:text-slate-400 uppercase font-bold tracking-wider">Ưu đãi kết thúc sau</p>
-              <div className="flex items-center gap-1 text-xs font-mono font-black text-slate-900 dark:text-white">
-                <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">{String(timeLeft.hours).padStart(2, '0')}</span>:
-                <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">{String(timeLeft.minutes).padStart(2, '0')}</span>:
-                <span className="bg-rose-600 text-white px-1.5 py-0.5 rounded">{String(timeLeft.seconds).padStart(2, '0')}</span>
-              </div>
+          {/* Stock & Origin */}
+          <div className="flex flex-col gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl shadow-sm text-xs">
+            <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
+              <PackageCheck size={16} />
+              <span>Tình trạng: Còn hàng</span>
             </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              Xuất xứ: Trung Quốc • Giao hàng toàn quốc
+            </p>
           </div>
         </div>
-
-        {/* Sold progress bar */}
-        <div className="mt-3">
-          <div className="flex justify-between text-[11px] text-slate-600 dark:text-slate-400 mb-1">
-            <span className="font-semibold text-rose-600 dark:text-rose-400">🔥 Đang bán rất chạy hôm nay</span>
-            <span>Đã bán 89%</span>
-          </div>
-          <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-            <div className="bg-gradient-to-r from-amber-500 to-rose-600 h-full rounded-full w-[89%]" />
-          </div>
-        </div>
-      </div>
-
-      {/* Vouchers & FreeShip */}
-      <div className="bg-slate-50 dark:bg-slate-950/80 rounded-xl p-3 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-2 text-xs">
-        <div className="flex items-center gap-1 text-rose-600 dark:text-rose-400 font-bold">
-          <Ticket size={14} />
-          <span>Voucher Ưu Đãi:</span>
-        </div>
-        <span className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded font-bold">
-          Miễn Phí Vận Chuyển 0đ
-        </span>
-        <span className="bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 px-2 py-0.5 rounded font-bold">
-          Giảm 10K Đơn từ 45K
-        </span>
-        <span className="bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 px-2 py-0.5 rounded font-bold">
-          Giảm 20K Đơn từ 90K
-        </span>
       </div>
 
       {/* VARIANT SELECTION */}
@@ -346,7 +291,7 @@ export default function ProductInfo({
               onClick={onBuyNow}
               className="w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-3 px-6 rounded-xl shadow-lg shadow-rose-600/30 flex items-center justify-center gap-2 text-sm sm:text-base transition transform active:scale-98"
             >
-              <span>MUA NGAY - FREESHIP HÔM NAY</span>
+              <span>ĐẶT MUA NGAY</span>
               <ChevronRight size={18} />
             </a>
           </div>

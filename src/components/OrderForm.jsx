@@ -24,8 +24,7 @@ export default function OrderForm({
     address: '',
     city: 'Hà Nội',
     paymentMethod: 'COD',
-    notes: '',
-    appliedVoucher: 'FREESHIP50K'
+    notes: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,20 +33,8 @@ export default function OrderForm({
   // Calculations
   const unitPrice = currentVariant.price || 35000;
   const subtotal = unitPrice * quantity;
-  
-  // Voucher calculation
-  let discount = 0;
-  let shippingFee = 0; // Default freeship promotion
-  if (formData.appliedVoucher === 'FREESHIP50K') {
-    shippingFee = 0;
-  }
-  if (formData.appliedVoucher === 'SALE10K' && subtotal >= 45000) {
-    discount = 10000;
-  } else if (formData.appliedVoucher === 'SALE20K' && subtotal >= 90000) {
-    discount = 20000;
-  }
-
-  const finalTotal = Math.max(0, subtotal - discount + shippingFee);
+  const shippingFee = 0; // Giao hàng tiêu chuẩn toàn quốc
+  const finalTotal = subtotal + shippingFee;
 
   const formatPrice = (num) => {
     return new Intl.NumberFormat('vi-VN').format(num) + 'đ';
@@ -122,8 +109,7 @@ export default function OrderForm({
           address: '',
           city: 'Hà Nội',
           paymentMethod: 'COD',
-          notes: '',
-          appliedVoucher: 'FREESHIP50K'
+          notes: ''
         });
       } else {
         setFormError('Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại!');
@@ -357,27 +343,8 @@ export default function OrderForm({
                 </div>
               </div>
 
-              {/* Voucher selection */}
-              <div>
-                <label className="block text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 mb-1.5 flex items-center gap-1">
-                  <Ticket size={12} className="text-rose-600" />
-                  <span>Áp Dụng Mã Giảm Giá & Voucher:</span>
-                </label>
-                <select
-                  name="appliedVoucher"
-                  value={formData.appliedVoucher}
-                  onChange={handleChange}
-                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs rounded-xl px-3 py-2 text-slate-900 dark:text-white outline-none"
-                >
-                  <option value="FREESHIP50K">FREESHIP50K - Miễn phí vận chuyển toàn quốc</option>
-                  <option value="SALE10K">SALE10K - Giảm 10.000đ (Đơn từ 45k)</option>
-                  <option value="SALE20K">SALE20K - Giảm 20.000đ (Đơn từ 90k)</option>
-                  <option value="NONE">Không sử dụng voucher</option>
-                </select>
-              </div>
-
               {/* Price Calculations */}
-              <div className="space-y-1.5 text-xs pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div className="space-y-1.5 text-xs pt-3 border-t border-slate-200 dark:border-slate-800">
                 <div className="flex justify-between text-slate-600 dark:text-slate-400">
                   <span>Tiền hàng ({quantity} đôi):</span>
                   <span className="text-slate-900 dark:text-white font-medium">{formatPrice(subtotal)}</span>
@@ -386,16 +353,9 @@ export default function OrderForm({
                 <div className="flex justify-between text-slate-600 dark:text-slate-400">
                   <span>Phí vận chuyển:</span>
                   <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                    {shippingFee === 0 ? 'MIỄN PHÍ (Freeship Toàn Quốc)' : formatPrice(shippingFee)}
+                    MIỄN PHÍ VẬN CHUYỂN
                   </span>
                 </div>
-
-                {discount > 0 && (
-                  <div className="flex justify-between text-rose-600 dark:text-rose-400 font-medium">
-                    <span>Giảm giá Voucher:</span>
-                    <span>-{formatPrice(discount)}</span>
-                  </div>
-                )}
 
                 <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-between items-baseline">
                   <span className="text-sm font-bold text-slate-900 dark:text-white">Tổng thanh toán:</span>
@@ -403,7 +363,7 @@ export default function OrderForm({
                     <span className="text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-500">
                       {formatPrice(finalTotal)}
                     </span>
-                    <p className="text-[10px] text-slate-600 dark:text-slate-400">(Đã bao gồm VAT & Freeship)</p>
+                    <p className="text-[10px] text-slate-600 dark:text-slate-400">(Kiểm tra hàng trước khi thanh toán)</p>
                   </div>
                 </div>
               </div>
@@ -418,7 +378,7 @@ export default function OrderForm({
                   <span>ĐANG XỬ LÝ ĐƠN HÀNG...</span>
                 ) : (
                   <>
-                    <span>ĐẶT HÀNG NGAY (GIẢM 50%)</span>
+                    <span>ĐẶT HÀNG NGAY</span>
                     <ChevronRight size={18} />
                   </>
                 )}

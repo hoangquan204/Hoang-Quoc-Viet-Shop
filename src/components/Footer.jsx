@@ -33,7 +33,7 @@ export default function Footer({ siteInfo, onOpenAdmin }) {
             </div>
             <div>
               <h4 className="font-bold text-slate-900 dark:text-white text-xs">GIAO HỎA TỐC</h4>
-              <p className="text-[11px] text-slate-600 dark:text-slate-400">Miễn phí ship toàn quốc</p>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400">Giao hàng tận nơi toàn quốc</p>
             </div>
           </div>
 

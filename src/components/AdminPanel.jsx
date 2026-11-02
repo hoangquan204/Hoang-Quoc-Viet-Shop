@@ -37,7 +37,7 @@ export default function AdminPanel({
     mobileSiteName: 'HQV Shop',
     tagline: 'Lót Giày Chất Lượng - Siêu Êm Giảm Đau Mỏi Chân',
     logoUrl: 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png',
-    announcement: '🔥 SIÊU SALE HÔM NAY: GIẢM ĐẾN 50% + MIỄN PHÍ VẬN CHUYỂN TOÀN QUỐC CHO ĐƠN TỪ 50K! ĐẶT HÀNG NHẬN QUÀ NGAY',
+    announcement: '✨ HOÀNG QUỐC VIỆT SHOP • PHÂN PHỐI TẤM LÓT GIÀY 4D# CHÍNH HÃNG • GIAO HÀNG TOÀN QUỐC • KIỂM TRA HÀNG KHI NHẬN',
     hotline: '0971.250.891',
     zalo: '0356280381',
     email: 'haimyminhquan2123@gmail.com',

@@ -4,17 +4,13 @@ export const initialData = {
     mobileSiteName: "HQV Shop",
     tagline: "Lót Giày Chất Lượng - Siêu Êm Giảm Đau Mỏi Chân",
     logoUrl: "https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png",
-    announcement: "🔥 SIÊU SALE HÔM NAY: GIẢM ĐẾN 50% + MIỄN PHÍ VẬN CHUYỂN TOÀN QUỐC CHO ĐƠN TỪ 50K! ĐẶT HÀNG NHẬN QUÀ NGAY",
+    announcement: "✨ HOÀNG QUỐC VIỆT SHOP • PHÂN PHỐI TẤM LÓT GIÀY 4D# CHÍNH HÃNG • GIAO HÀNG TOÀN QUỐC • KIỂM TRA HÀNG KHI NHẬN",
     hotline: "0971.250.891",
     zalo: "0356280381",
     email: "haimyminhquan2123@gmail.com",
     address: "Hoàng Quốc Việt Shop - Tổng Kho Phụ Kiện Giày - Hà Nội & TP. Hồ Chí Minh",
     guaranteeText: "Cam kết chính hãng 100% • Đổi trả 7 ngày miễn phí • Kiểm tra hàng trước khi thanh toán",
-    vouchers: [
-      { id: "v1", code: "FREESHIP50K", name: "Freeship Toàn Quốc", desc: "Miễn phí vận chuyển toàn quốc cho đơn từ 50k", discount: 25000, minSpend: 50000, type: "freeship" },
-      { id: "v2", code: "SALE10K", name: "Voucher Giảm 10K", desc: "Giảm ngay 10.000đ cho đơn từ 45.000đ", discount: 10000, minSpend: 45000, type: "cash" },
-      { id: "v3", code: "SALE20K", name: "Voucher Giảm 20K", desc: "Giảm ngay 20.000đ cho đơn từ 90.000đ", discount: 20000, minSpend: 90000, type: "cash" }
-    ]
+    vouchers: []
   },
   products: [
     {
@@ -54,7 +50,6 @@ export const initialData = {
           gender: "Nam",
           name: "Lót Giày Nam - Bản Tiêu Chuẩn 4D",
           price: 35000,
-          originalPrice: 65000,
           sizes: ["38", "39", "40", "41", "42", "43", "44", "45", "46", "47"],
           colors: ["Đen Cá Tính", "Xám Thể Thao", "Xanh Rêu"],
           description: "Êm ái hàng ngày, giảm đau gót chân, vạch cắt từ size 38 đến 47",
@@ -65,7 +60,6 @@ export const initialData = {
           gender: "Nam",
           name: "Lót Giày Nam - Bản Nâng Cấp Pro Đệm Khí 4D",
           price: 50000,
-          originalPrice: 95000,
           sizes: ["38", "39", "40", "41", "42", "43", "44", "45", "46", "47"],
           colors: ["Đen Pro", "Vàng Thể Thao Sport", "Xanh Navy Năng Động"],
           description: "Đệm khí tổ ong cao cấp trợ lực gót + U-Cup ôm sát gót chân chống lật cổ chân khi chạy bộ",
@@ -76,7 +70,6 @@ export const initialData = {
           gender: "Nữ",
           name: "Lót Giày Nữ - Bản Tiêu Chuẩn 4D",
           price: 25000,
-          originalPrice: 50000,
           sizes: ["35", "36", "37", "38", "39", "40", "41"],
           colors: ["Hồng Pastel", "Đen", "Be Tự Nhiên"],
           description: "Mềm mại như dẫm trên mây, chống thốn gót, vừa vặn giày sneaker & búp bê",
@@ -87,7 +80,6 @@ export const initialData = {
           gender: "Nữ",
           name: "Lót Giày Nữ - Bản Nâng Cấp Pro Siêu Êm 4D",
           price: 45000,
-          originalPrice: 85000,
           sizes: ["35", "36", "37", "38", "39", "40", "41"],
           colors: ["Hồng Sakura", "Tím Lavender", "Đen Tuyền"],
           description: "Chất liệu PU Foam đàn hồi chậm + Đệm massage vòm bàn chân, đi bộ 10.000 bước không mỏi",

@@ -29,13 +29,22 @@ function getLocalDB() {
           if (!parsed.siteInfo.email || parsed.siteInfo.email !== initialData.siteInfo.email) {
             parsed.siteInfo.email = initialData.siteInfo.email;
           }
+          if (!parsed.siteInfo.announcement || parsed.siteInfo.announcement.includes('SALE') || parsed.siteInfo.announcement.includes('GIẢM')) {
+            parsed.siteInfo.announcement = initialData.siteInfo.announcement;
+          }
+          parsed.siteInfo.vouchers = [];
         }
 
-        // Auto-migrate product images if they contain unsplash
+        // Auto-migrate product images and remove promo prices
         if (parsed.products && parsed.products[0]) {
           const prod = parsed.products[0];
           if (!prod.images || prod.images.some(img => img.includes('unsplash'))) {
             prod.images = initialData.products[0].images;
+          }
+          if (prod.variants) {
+            prod.variants.forEach(v => {
+              delete v.originalPrice;
+            });
           }
         }
 
