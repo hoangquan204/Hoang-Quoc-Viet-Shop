@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { Play, Pause, Volume2, VolumeX, ChevronLeft, ChevronRight, Maximize2, ShieldCheck, CheckCircle2, Film, Sparkles, X } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { Play, Pause, Volume2, VolumeX, ChevronLeft, ChevronRight, Maximize2, Film, Sparkles, X } from 'lucide-react';
 
 export default function ProductMediaGallery({ product }) {
   const images = product?.images && product.images.length > 0 ? product.images : [
@@ -17,7 +18,7 @@ export default function ProductMediaGallery({ product }) {
     ...images.map((img, idx) => ({ type: 'image', url: img, title: `Ảnh Chi Tiết #${idx + 1}`, thumbnail: img }))
   ];
 
-  const [activeIndex, setActiveIndex] = useState(1); // default to first product photo (or 0 for video)
+  const [activeIndex, setActiveIndex] = useState(1); // default to first product photo
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -49,6 +50,30 @@ export default function ProductMediaGallery({ product }) {
     videoRef.current.muted = !isMuted;
     setIsMuted(!isMuted);
   };
+
+  // Lock body scroll and register keyboard listeners when lightbox is open
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsLightboxOpen(false);
+      } else if (e.key === 'ArrowLeft') {
+        handlePrev();
+      } else if (e.key === 'ArrowRight') {
+        handleNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isLightboxOpen, mediaItems.length]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -238,27 +263,130 @@ export default function ProductMediaGallery({ product }) {
         </div>
       </div>
 
-      {/* Lightbox / Fullscreen Modal */}
-      {isLightboxOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-          <button
-            onClick={() => setIsLightboxOpen(false)}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/40 transition z-50"
-          >
-            <X size={20} />
-          </button>
+      {/* Lightbox / Fullscreen Modal (Rendered directly in document.body via Portal to bypass any stacking context) */}
+      {isLightboxOpen && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[99999] flex flex-col justify-between bg-black/95 backdrop-blur-md p-3 sm:p-6 animate-fade-in select-none"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsLightboxOpen(false);
+          }}
+        >
+          {/* Top Bar inside Lightbox */}
+          <div className="flex items-center justify-between w-full max-w-6xl mx-auto z-10 py-1">
+            <div className="flex items-center gap-3 text-white">
+              <span className="font-bold text-sm sm:text-base">
+                {activeMedia.title}
+              </span>
+              <span className="text-xs text-slate-400 bg-white/10 px-2.5 py-1 rounded-full">
+                {activeIndex === 0 ? 'Video Sản Phẩm' : `Ảnh ${activeIndex} / ${mediaItems.length - 1}`}
+              </span>
+            </div>
 
-          <div className="max-w-4xl max-h-[85vh] overflow-hidden rounded-2xl relative">
-            <img
-              src={activeMedia.url}
-              alt="Zoomed Product"
-              className="max-w-full max-h-[85vh] object-contain rounded-2xl"
-            />
+            <div className="flex items-center gap-3">
+              <span className="hidden sm:inline text-xs text-slate-400">
+                Nhấn ESC hoặc bấm ra ngoài để đóng
+              </span>
+              <button
+                onClick={() => setIsLightboxOpen(false)}
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 hover:bg-rose-600 text-white flex items-center justify-center transition shadow-lg active:scale-90"
+                title="Đóng (Esc)"
+              >
+                <X size={22} />
+              </button>
+            </div>
           </div>
-        </div>
+
+          {/* Central Image Viewport with Previous & Next navigation */}
+          <div 
+            className="flex-1 flex items-center justify-center w-full max-w-6xl mx-auto relative my-2 min-h-0"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setIsLightboxOpen(false);
+            }}
+          >
+            {/* Prev Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrev();
+              }}
+              className="absolute left-1 sm:left-4 z-20 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-white/20 shadow-2xl transition hover:scale-110 active:scale-95"
+              title="Xem ảnh trước (Phím mũi tên trái)"
+            >
+              <ChevronLeft size={28} />
+            </button>
+
+            {/* Media Content */}
+            <div className="w-full h-full flex items-center justify-center p-2 sm:p-4">
+              {activeMedia.type === 'video' ? (
+                <video
+                  src={activeMedia.url}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="max-w-full max-h-[75vh] rounded-2xl shadow-2xl bg-black"
+                />
+              ) : (
+                <img
+                  src={activeMedia.url}
+                  alt={activeMedia.title}
+                  className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl transition-transform duration-200"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793624516/Gemini_Generated_Image_kj8pblkj8pblkj8p_xumnxs.png';
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Next Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNext();
+              }}
+              className="absolute right-1 sm:right-4 z-20 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-white/20 shadow-2xl transition hover:scale-110 active:scale-95"
+              title="Xem ảnh kế tiếp (Phím mũi tên phải)"
+            >
+              <ChevronRight size={28} />
+            </button>
+          </div>
+
+          {/* Bottom Thumbnails Strip */}
+          <div className="w-full max-w-2xl mx-auto flex items-center justify-center gap-2 overflow-x-auto py-2 z-10 no-scrollbar">
+            {mediaItems.map((item, idx) => {
+              const isSelected = activeIndex === idx;
+              return (
+                <button
+                  key={idx}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveIndex(idx);
+                  }}
+                  className={`relative w-12 h-12 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 border-2 transition ${
+                    isSelected
+                      ? 'border-rose-500 ring-2 ring-rose-500 scale-105 shadow-lg'
+                      : 'border-white/30 opacity-60 hover:opacity-100 hover:border-white'
+                  }`}
+                  title={item.title}
+                >
+                  <img
+                    src={item.thumbnail}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+                  {item.type === 'video' && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-rose-500">
+                      <Play size={14} className="fill-current" />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>,
+        document.body
       )}
 
     </div>
   );
 }
-

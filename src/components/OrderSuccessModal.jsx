@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { CheckCircle, Truck, Phone, X } from 'lucide-react';
 
 export default function OrderSuccessModal({ order, onClose, siteInfo }) {
+  useEffect(() => {
+    if (!order) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [order, onClose]);
+
   if (!order) return null;
 
   const hotline = siteInfo?.hotline || '0971.250.891';
@@ -10,8 +26,13 @@ export default function OrderSuccessModal({ order, onClose, siteInfo }) {
     return new Intl.NumberFormat('vi-VN').format(num || 0) + 'đ';
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/85 backdrop-blur-md animate-fade-in">
+  const content = (
+    <div 
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/70 dark:bg-black/85 backdrop-blur-md animate-fade-in"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl">
         
         {/* Header with success badge */}
@@ -58,60 +79,52 @@ export default function OrderSuccessModal({ order, onClose, siteInfo }) {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600 dark:text-slate-400">Kích thước & Màu:</span>
-              <span className="text-slate-900 dark:text-white font-semibold">Size {order.size} • {order.color}</span>
+              <span className="text-slate-900 dark:text-white font-bold">Size {order.size} • Màu {order.color}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600 dark:text-slate-400">Số lượng:</span>
-              <span className="text-slate-900 dark:text-white font-semibold">{order.quantity} đôi</span>
+              <span className="text-slate-900 dark:text-white font-bold">{order.quantity} đôi</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600 dark:text-slate-400">Tổng thanh toán:</span>
-              <span className="text-lg font-black text-rose-600 dark:text-rose-400">{formatPrice(order.finalAmount || order.totalAmount)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600 dark:text-slate-400">Hình thức:</span>
-              <span className="text-slate-900 dark:text-white font-medium">
-                {order.paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng (COD)' : 'Chuyển khoản VietQR'}
-              </span>
+            <div className="flex justify-between pt-2 border-t border-slate-100 dark:border-slate-800/60 text-sm">
+              <span className="text-slate-900 dark:text-white font-bold">Tổng thanh toán (COD):</span>
+              <span className="text-rose-600 dark:text-rose-400 font-black text-base">{formatPrice(order.totalAmount)}</span>
             </div>
           </div>
 
-          {/* Shipping to */}
-          <div className="space-y-1 border-b border-slate-200 dark:border-slate-800 pb-4">
-            <p className="text-slate-600 dark:text-slate-400 text-[11px]">Người nhận hàng:</p>
-            <p className="text-slate-900 dark:text-white font-bold">{order.customerName} - {order.phone}</p>
-            <p className="text-slate-700 dark:text-slate-300 text-xs">{order.address}, {order.city}</p>
+          {/* Shipping promise */}
+          <div className="flex items-start gap-3 bg-sky-50 dark:bg-sky-950/30 p-3 rounded-xl border border-sky-200 dark:border-sky-800 text-sky-800 dark:text-sky-300">
+            <Truck size={18} className="shrink-0 mt-0.5" />
+            <div className="text-xs">
+              <p className="font-bold">Giao hàng toàn quốc</p>
+              <p className="text-[11px] text-sky-700 dark:text-sky-400 mt-0.5">
+                Nhân viên shop sẽ liên hệ xác nhận đơn qua số điện thoại <strong>{order.customerPhone}</strong> và gửi hàng nhanh.
+              </p>
+            </div>
           </div>
 
-          {/* Delivery Note */}
-          <div className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl flex items-center gap-2.5 text-slate-700 dark:text-slate-300">
-            <Truck size={20} className="text-amber-500 shrink-0" />
-            <p className="text-xs">
-              Đơn hàng sẽ được đóng gói và giao đến bạn trong <strong className="text-slate-900 dark:text-white">1 - 3 ngày làm việc</strong>. Bạn được kiểm tra hàng trước khi thanh toán.
-            </p>
+          {/* Contact shop note */}
+          <div className="text-center pt-1 text-slate-500 dark:text-slate-400 text-xs">
+            Cần hỗ trợ gấp? Gọi ngay hotline:{' '}
+            <a href={`tel:${hotline}`} className="text-rose-600 dark:text-rose-400 font-bold hover:underline">
+              {hotline}
+            </a>
           </div>
 
         </div>
 
-        {/* Action Buttons */}
-        <div className="p-6 pt-0 flex flex-col sm:flex-row gap-2">
-          <a
-            href={`tel:${hotline}`}
-            className="flex-1 py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs flex items-center justify-center gap-1.5 transition border border-slate-200 dark:border-slate-700"
-          >
-            <Phone size={14} className="text-rose-600" />
-            <span>Hotline: {hotline}</span>
-          </a>
-
+        {/* Footer */}
+        <div className="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex justify-center">
           <button
             onClick={onClose}
-            className="flex-1 py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition shadow text-center"
+            className="w-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold py-2.5 rounded-xl transition"
           >
-            Tiếp Tục Xem Sản Phẩm
+            Đóng Lại & Tiếp Tục Xem Hàng
           </button>
         </div>
 
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(content, document.body) : null;
 }

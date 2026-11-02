@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Star, ThumbsUp, CheckCircle, MessageSquare, Plus } from 'lucide-react';
 import { api } from '../services/api';
 
@@ -13,6 +14,21 @@ export default function ReviewsSection({ reviews, productId, onReviewAdded }) {
     imageUrl: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!showAddModal) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setShowAddModal(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showAddModal]);
 
   const filterOptions = [
     { id: 'ALL', label: `Tất cả (${reviews.length})` },
@@ -240,8 +256,13 @@ export default function ReviewsSection({ reviews, productId, onReviewAdded }) {
       </div>
 
       {/* Add Review Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm animate-fade-in">
+      {showAddModal && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/70 dark:bg-black/85 backdrop-blur-sm animate-fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowAddModal(false);
+          }}
+        >
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 w-full max-w-md rounded-2xl p-5 shadow-2xl">
             <h3 className="text-base font-bold text-slate-900 dark:text-white mb-3">Đánh Giá Sản Phẩm Lót Giày 4D#</h3>
             
@@ -330,7 +351,8 @@ export default function ReviewsSection({ reviews, productId, onReviewAdded }) {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );

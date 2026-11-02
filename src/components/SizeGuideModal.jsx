@@ -1,11 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Scissors, ShieldCheck, Footprints, Flame } from 'lucide-react';
 
 export default function SizeGuideModal({ isOpen, onClose }) {
+  useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm animate-fade-in">
+  const content = (
+    <div 
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/70 dark:bg-black/85 backdrop-blur-sm animate-fade-in"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
         
         {/* Header */}
@@ -45,78 +66,77 @@ export default function SizeGuideModal({ isOpen, onClose }) {
 
             <div className="bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60">
               <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white mb-1.5">
-                <span className="w-6 h-6 rounded-full bg-sky-600 text-white flex items-center justify-center text-xs">2</span>
-                <span>Ướm đo lên lót 4D#</span>
+                <span className="w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs">2</span>
+                <span>Áp vào lót giày 4D#</span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400">
-                Đặt miếng lót cũ lên trên mặt đáy của tấm lót 4D#, căn chỉnh trùng khớp phần gót chân.
+                Đặt miếng lót cũ đè lên mặt sau của miếng lót giày 4D#, căn gót cho bằng nhau.
               </p>
             </div>
 
             <div className="bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60">
               <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white mb-1.5">
-                <span className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs">3</span>
-                <span>Cắt theo đường viền</span>
+                <span className="w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs">3</span>
+                <span>Cắt theo vạch size định hình</span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400">
-                Dùng kéo sắc cắt phần mũi lót 4D# theo đường viền mẫu của lót cũ hoặc theo vạch size in sẵn ở mặt đáy.
+                Dùng kéo cắt tỉa theo đường viền của lót cũ hoặc theo các đường rãnh vạch sẵn tương ứng với size giày của bạn.
               </p>
             </div>
 
             <div className="bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60">
               <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white mb-1.5">
-                <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs">4</span>
-                <span>Đặt vào giày & Đi thử</span>
+                <span className="w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs">4</span>
+                <span>Lắp vào giày & tận hưởng</span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400">
-                Đặt tấm lót 4D# vào trong giày sao cho phẳng phiu, mặt vải hướng lên trên và tận hưởng độ êm ái!
+                Cho miếng lót 4D# mới vào trong giày, căn chỉnh phẳng phiu và trải nghiệm cảm giác êm ái đàn hồi suốt cả ngày.
               </p>
             </div>
 
           </div>
 
-          {/* Size Table */}
-          <div className="bg-slate-100 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-            <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <Footprints size={14} className="text-rose-600 dark:text-sky-400" />
-              <span>Bảng Phân Loại Kích Thước (Size Giày)</span>
+          {/* Size Chart Comparison */}
+          <div>
+            <h4 className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm mb-2 flex items-center gap-2">
+              <Footprints size={16} className="text-rose-500" />
+              <span>Bảng Đo Size Tiêu Chuẩn (Chiều dài bàn chân)</span>
             </h4>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-slate-300 dark:border-slate-800 text-slate-600 dark:text-slate-400">
-                    <th className="pb-2">Phân loại</th>
-                    <th className="pb-2">Khoảng Size Chuẩn</th>
-                    <th className="pb-2">Chiều dài (cm)</th>
-                    <th className="pb-2">Giá ưu đãi</th>
+            <div className="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
+              <table className="w-full text-center text-xs">
+                <thead className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <th className="py-2 px-3 text-left">Phân Loại</th>
+                    <th className="py-2 px-2">Size EUR</th>
+                    <th className="py-2 px-2">Chiều dài (cm)</th>
+                    <th className="py-2 px-2">Phạm vi cắt</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60">
-                  <tr>
-                    <td className="py-2.5 font-bold text-sky-700 dark:text-sky-400">Lót Giày Nam</td>
-                    <td className="py-2.5 text-slate-900 dark:text-white font-bold">Size 38 - 47</td>
-                    <td className="py-2.5 text-slate-700 dark:text-slate-300">24.5cm - 29.5cm</td>
-                    <td className="py-2.5 text-rose-600 font-bold">35.000 - 50.000đ</td>
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                  <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <td className="py-2 px-3 text-left font-bold text-rose-600">Nữ (Women)</td>
+                    <td className="py-2 px-2 font-bold">35 – 41</td>
+                    <td className="py-2 px-2">22.5 – 25.5 cm</td>
+                    <td className="py-2 px-2 text-emerald-600 font-semibold">Tự do cắt theo vạch</td>
                   </tr>
-                  <tr>
-                    <td className="py-2.5 font-bold text-pink-700 dark:text-pink-400">Lót Giày Nữ</td>
-                    <td className="py-2.5 text-slate-900 dark:text-white font-bold">Size 35 - 41</td>
-                    <td className="py-2.5 text-slate-700 dark:text-slate-300">22.5cm - 26.0cm</td>
-                    <td className="py-2.5 text-rose-600 font-bold">25.000 - 45.000đ</td>
+                  <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <td className="py-2 px-3 text-left font-bold text-sky-600">Nam (Men)</td>
+                    <td className="py-2 px-2 font-bold">38 – 47</td>
+                    <td className="py-2 px-2">24.0 – 29.5 cm</td>
+                    <td className="py-2 px-2 text-emerald-600 font-semibold">Tự do cắt theo vạch</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-2 italic">
-              * Khuyến cáo: Nếu phân vân giữa 2 size, quý khách nên chọn size lớn hơn một chút rồi dùng kéo cắt tỉa dần cho vừa khít với form mũi giày.
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 italic">
+              * Lời khuyên: Nếu lỡ giữa 2 size, bạn nên chọn mua size lớn hơn để dễ dàng cắt bớt viền mũi cho vừa in đôi giày của mình.
             </p>
           </div>
 
-          {/* Cảnh Báo & Bảo Quản Box */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Safety & Care Notes */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
             <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-500/30 p-3 rounded-xl">
-              <h5 className="font-bold text-amber-700 dark:text-amber-400 text-xs flex items-center gap-1.5 mb-1">
+              <h5 className="font-bold text-amber-800 dark:text-amber-400 text-xs flex items-center gap-1.5 mb-1">
                 <ShieldCheck size={14} /> Bảo Quản Sản Phẩm
               </h5>
               <p className="text-xs text-slate-700 dark:text-slate-300">
@@ -149,4 +169,6 @@ export default function SizeGuideModal({ isOpen, onClose }) {
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(content, document.body) : null;
 }
