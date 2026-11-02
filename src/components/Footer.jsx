@@ -3,9 +3,10 @@ import { ShieldCheck, RotateCcw, Truck, Lock, Phone, MapPin } from 'lucide-react
 
 export default function Footer({ siteInfo, onOpenAdmin }) {
   const info = siteInfo || {
-    siteName: '4D INSOLE - TỔNG KHO LÓT GIÀY CHÍNH HÃNG',
+    siteName: 'Hoàng Quốc Việt Shop',
     hotline: '0988.456.789',
-    address: 'Tổng Kho Phụ Kiện Giày - Hà Nội & TP. Hồ Chí Minh'
+    address: 'Hoàng Quốc Việt Shop - Tổng Kho Phụ Kiện Giày - Hà Nội & TP. Hồ Chí Minh',
+    logoUrl: 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png'
   };
 
   return (
@@ -60,9 +61,21 @@ export default function Footer({ siteInfo, onOpenAdmin }) {
           
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-rose-600 flex items-center justify-center font-black text-white text-xs shadow-sm">
-                4D#
-              </span>
+              {info.logoUrl ? (
+                <img 
+                  src={info.logoUrl} 
+                  alt={info.siteName || 'Hoàng Quốc Việt Shop'} 
+                  className="w-8 h-8 rounded-lg object-contain bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-0.5 shadow-sm"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png';
+                  }}
+                />
+              ) : (
+                <span className="w-7 h-7 rounded-lg bg-rose-600 flex items-center justify-center font-black text-white text-xs shadow-sm">
+                  HQV
+                </span>
+              )}
               <span className="text-sm font-black text-slate-900 dark:text-white">{info.siteName}</span>
             </div>
             <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">

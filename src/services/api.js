@@ -8,6 +8,20 @@ function getLocalDB() {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed.products && parsed.products.length > 0) {
+        // Auto-migrate siteInfo if outdated
+        if (parsed.siteInfo) {
+          if (!parsed.siteInfo.siteName || parsed.siteInfo.siteName.includes('4D INSOLE')) {
+            parsed.siteInfo.siteName = initialData.siteInfo.siteName;
+            parsed.siteInfo.mobileSiteName = initialData.siteInfo.mobileSiteName;
+          }
+          if (!parsed.siteInfo.logoUrl || parsed.siteInfo.logoUrl.includes('unsplash')) {
+            parsed.siteInfo.logoUrl = initialData.siteInfo.logoUrl;
+          }
+          if (!parsed.siteInfo.mobileSiteName) {
+            parsed.siteInfo.mobileSiteName = initialData.siteInfo.mobileSiteName;
+          }
+          saveLocalDB(parsed);
+        }
         return parsed;
       }
     }

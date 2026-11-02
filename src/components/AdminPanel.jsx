@@ -33,13 +33,14 @@ export default function AdminPanel({
 
   // Edit Site Form State
   const [siteForm, setSiteForm] = useState(() => siteInfo || {
-    siteName: '4D INSOLE - TỔNG KHO LÓT GIÀY CHÍNH HÃNG',
-    tagline: 'Top #1 Phụ Kiện Giày Êm Chân Bán Chạy Nhất Toàn Quốc',
-    logoUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=160&auto=format&fit=crop&q=80',
+    siteName: 'Hoàng Quốc Việt Shop',
+    mobileSiteName: 'HQV Shop',
+    tagline: 'Lót Giày Chất Lượng - Siêu Êm Giảm Đau Mỏi Chân',
+    logoUrl: 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png',
     announcement: '🔥 SIÊU SALE HÔM NAY: GIẢM ĐẾN 50% + MIỄN PHÍ VẬN CHUYỂN TOÀN QUỐC CHO ĐƠN TỪ 50K! ĐẶT HÀNG NHẬN QUÀ NGAY',
     hotline: '0988.456.789',
     zalo: '0988456789',
-    address: 'Tổng Kho Phụ Kiện Giày - Hà Nội & TP. Hồ Chí Minh'
+    address: 'Hoàng Quốc Việt Shop - Tổng Kho Phụ Kiện Giày - Hà Nội & TP. Hồ Chí Minh'
   });
 
   // Edit Product State
@@ -429,15 +430,29 @@ export default function AdminPanel({
 
             <form onSubmit={handleSaveSiteInfo} className="space-y-4 max-w-3xl text-xs">
               
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Tên Website / Thương hiệu *</label>
-                <input
-                  type="text"
-                  required
-                  value={siteForm.siteName}
-                  onChange={(e) => setSiteForm(prev => ({ ...prev, siteName: e.target.value }))}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-rose-500 rounded-xl px-4 py-2.5 text-slate-900 dark:text-white outline-none text-sm"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Tên Website (Desktop) *</label>
+                  <input
+                    type="text"
+                    required
+                    value={siteForm.siteName}
+                    onChange={(e) => setSiteForm(prev => ({ ...prev, siteName: e.target.value }))}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-rose-500 rounded-xl px-4 py-2.5 text-slate-900 dark:text-white outline-none text-sm"
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1">Ví dụ: Hoàng Quốc Việt Shop</p>
+                </div>
+                <div>
+                  <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Tên Hiển Thị Rút Gọn (Mobile)</label>
+                  <input
+                    type="text"
+                    value={siteForm.mobileSiteName || ''}
+                    onChange={(e) => setSiteForm(prev => ({ ...prev, mobileSiteName: e.target.value }))}
+                    placeholder="HQV Shop"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-rose-500 rounded-xl px-4 py-2.5 text-slate-900 dark:text-white outline-none text-sm"
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1">Hiển thị trên màn hình điện thoại (ví dụ: HQV Shop)</p>
+                </div>
               </div>
 
               <div>
@@ -456,15 +471,15 @@ export default function AdminPanel({
                   URL Logo Website (Điền link hình ảnh logo)
                 </label>
                 <div className="flex gap-3 items-center">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 overflow-hidden shrink-0 flex items-center justify-center p-1">
+                  <div className="w-14 h-14 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 overflow-hidden shrink-0 flex items-center justify-center p-1 shadow-sm">
                     {siteForm.logoUrl ? (
                       <img 
                         src={siteForm.logoUrl} 
                         alt="Logo Preview" 
-                        className="w-full h-full object-cover rounded-xl"
+                        className="w-full h-full object-contain rounded-xl"
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=160&auto=format&fit=crop&q=80';
+                          e.target.src = 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png';
                         }}
                       />
                     ) : (

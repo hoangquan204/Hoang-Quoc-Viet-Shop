@@ -3,10 +3,11 @@ import { Phone, ShoppingBag, Sun, Moon } from 'lucide-react';
 
 export default function Navbar({ siteInfo, onOpenAdmin, currentView, setCurrentView, theme, toggleTheme }) {
   const info = siteInfo || {
-    siteName: '4D INSOLE - TỔNG KHO LÓT GIÀY CHÍNH HÃNG',
+    siteName: 'Hoàng Quốc Việt Shop',
+    mobileSiteName: 'HQV Shop',
     announcement: '🔥 SIÊU SALE HÔM NAY: GIẢM ĐẾN 50% + MIỄN PHÍ VẬN CHUYỂN TOÀN QUỐC CHO ĐƠN TỪ 50K! ĐẶT HÀNG NHẬN QUÀ NGAY',
     hotline: '0988.456.789',
-    logoUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=160&auto=format&fit=crop&q=80'
+    logoUrl: 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png'
   };
 
   return (
@@ -29,22 +30,22 @@ export default function Navbar({ siteInfo, onOpenAdmin, currentView, setCurrentV
           {/* Logo & Brand Name */}
           <div 
             onClick={() => setCurrentView('shop')}
-            className="flex items-center gap-3 cursor-pointer group"
+            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group"
           >
-            <div className="relative">
+            <div className="relative shrink-0">
               {info.logoUrl ? (
                 <img 
                   src={info.logoUrl} 
-                  alt={info.siteName} 
-                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-cover border-2 border-rose-500 shadow-md group-hover:scale-105 transition-transform"
+                  alt={info.siteName || 'Hoàng Quốc Việt Shop'} 
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-contain bg-white dark:bg-slate-800 border-2 border-rose-500 shadow-md group-hover:scale-105 transition-transform p-0.5"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=160&auto=format&fit=crop&q=80';
+                    e.target.src = 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png';
                   }}
                 />
               ) : (
-                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-rose-500 to-rose-700 flex items-center justify-center font-black text-white text-lg shadow-md">
-                  4D#
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-rose-500 to-rose-700 flex items-center justify-center font-black text-white text-sm sm:text-base shadow-md">
+                  HQV
                 </div>
               )}
               <span className="absolute -bottom-1 -right-1 bg-sky-500 text-white text-[9px] font-black px-1 rounded-sm shadow uppercase">
@@ -53,8 +54,13 @@ export default function Navbar({ siteInfo, onOpenAdmin, currentView, setCurrentV
             </div>
 
             <div>
-              <span className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white group-hover:text-rose-600 transition-colors line-clamp-1">
-                {info.siteName}
+              {/* Hiển thị trên màn hình mobile: HQV Shop */}
+              <span className="sm:hidden text-base font-black tracking-tight text-slate-900 dark:text-white group-hover:text-rose-600 transition-colors">
+                {info.mobileSiteName || (info.siteName?.includes('Hoàng Quốc Việt') ? 'HQV Shop' : info.siteName)}
+              </span>
+              {/* Hiển thị trên màn hình desktop: Hoàng Quốc Việt Shop */}
+              <span className="hidden sm:inline text-lg font-black tracking-tight text-slate-900 dark:text-white group-hover:text-rose-600 transition-colors line-clamp-1">
+                {info.siteName || 'Hoàng Quốc Việt Shop'}
               </span>
             </div>
           </div>
