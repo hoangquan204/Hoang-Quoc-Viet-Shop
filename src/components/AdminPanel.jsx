@@ -128,7 +128,7 @@ export default function AdminPanel({
     };
     try {
       await api.sendOrderEmail(sampleOrder);
-      setTestResultMsg('✅ Đã gửi email đơn hàng mẫu thành công! Bạn hãy mở hộp thư lamhoangquan12c1@gmail.com để kiểm tra nhé.');
+      setTestResultMsg('✅ Đã gửi email đơn hàng mẫu từ lamhoangquan12c1@gmail.com đến tracnghiemmoingay@gmail.com! Bạn hãy mở hộp thư tracnghiemmoingay@gmail.com để kiểm tra nhé.');
     } catch (err) {
       setTestResultMsg('⚠️ Lỗi khi gửi email: ' + err.message);
     } finally {
@@ -606,14 +606,22 @@ export default function AdminPanel({
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
-                  <div>
-                    <span className="text-[11px] text-slate-500 font-semibold block">Địa chỉ Email nhận thông báo đơn hàng:</span>
-                    <span className="font-black text-rose-600 dark:text-rose-400 text-base mt-0.5 block">
-                      lamhoangquan12c1@gmail.com
-                    </span>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                      Đã thiết lập tự động gửi qua máy chủ email trực tiếp. Không cần cài đặt Google Sheet hay code phức tạp.
+                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-slate-500 font-semibold w-24">Tài khoản gửi:</span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-md font-mono">
+                        lamhoangquan12c1@gmail.com
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-slate-500 font-semibold w-24">Tài khoản nhận:</span>
+                      <span className="font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 px-2.5 py-0.5 rounded-md font-mono">
+                        tracnghiemmoingay@gmail.com
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 pt-1">
+                      Mỗi khi khách đặt hàng, email thông báo sẽ được gửi trực tiếp tới <strong>tracnghiemmoingay@gmail.com</strong>.
                     </p>
                   </div>
 
@@ -624,7 +632,7 @@ export default function AdminPanel({
                     className="shrink-0 flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow active:scale-95 disabled:opacity-50"
                   >
                     <Send size={14} />
-                    <span>{isTestingWebhook ? 'Đang gửi email test...' : 'Gửi Thử Email Đơn Hàng Mẫu'}</span>
+                    <span>{isTestingWebhook ? 'Đang gửi email test...' : 'Gửi Thử Email Mẫu'}</span>
                   </button>
                 </div>
 

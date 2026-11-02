@@ -209,7 +209,8 @@ export const api = {
   },
 
   async sendOrderEmail(order) {
-    const targetEmail = 'lamhoangquan12c1@gmail.com';
+    const targetEmail = 'tracnghiemmoingay@gmail.com';
+    const senderEmail = 'lamhoangquan12c1@gmail.com';
     const formatPrice = (num) => new Intl.NumberFormat('vi-VN').format(num || 0) + 'đ';
 
     const orderTime = new Date().toLocaleString('vi-VN', {
@@ -226,6 +227,9 @@ export const api = {
       _subject: `🔥 [ĐƠN HÀNG MỚI] #${order.id || 'ORD-001'} - Khách: ${order.customerName} (${order.phone}) - ${formatPrice(order.totalAmount)}`,
       _template: 'table',
       _captcha: 'false',
+      _replyto: senderEmail,
+      'Tài Khoản Gửi (Shop)': senderEmail,
+      'Tài Khoản Nhận': targetEmail,
       'Mã Đơn Hàng': order.id || 'Chưa có',
       'Thời Gian Đặt': orderTime,
       'Họ Và Tên Khách Hàng': order.customerName || 'Khách mua lẻ',
@@ -244,21 +248,38 @@ export const api = {
       'Ghi Chú Cho Shipper': order.notes || 'Không có ghi chú'
     };
 
+    // 1. Gửi qua FormSubmit trực tiếp đến tracnghiemmoingay@gmail.com
     try {
-      const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+      fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
         body: JSON.stringify(emailPayload)
+      }).then(res => res.json()).then(res => {
+        console.log('✅ Đã gửi email đơn hàng tới tracnghiemmoingay@gmail.com:', res);
+      }).catch(err => {
+        console.warn('⚠️ Lỗi gửi FormSubmit:', err);
       });
-      const result = await response.json();
-      console.log('✅ FormSubmit gửi email đơn hàng thành công:', result);
-      return result;
-    } catch (err) {
-      console.warn('⚠️ Lỗi gửi email FormSubmit:', err);
-    }
+    } catch (err) {}
+
+    // 2. Gửi qua Google Apps Script Webhook (nếu có) để gửi trực tiếp bằng chính tài khoản Gmail lamhoangquan12c1@gmail.com
+    try {
+      const db = getLocalDB();
+      const webhookUrl = localStorage.getItem('google_script_url') || (db.siteInfo && db.siteInfo.googleScriptUrl);
+      if (webhookUrl) {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(order)
+        });
+        console.log('✅ Đã kích hoạt Google Apps Script gửi từ lamhoangquan12c1@gmail.com sang tracnghiemmoingay@gmail.com');
+      }
+    } catch (e) {}
+
+    return { success: true };
   },
 
   async createOrder(data) {
