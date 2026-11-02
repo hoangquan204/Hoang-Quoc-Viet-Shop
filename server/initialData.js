@@ -25,7 +25,7 @@ export const initialData = {
       material: "PU, Polyester, Spandex",
       instructions: "Cắt và đặt vào giày theo kích cỡ. Mặt dưới của miếng lót có in sẵn các đường vạch chuẩn theo từng size giày (Nam từ 38 đến 47, Nữ từ 35 đến 41). Quý khách có thể rút lót giày cũ của mình ra để ướm đo hoặc dùng kéo cắt trực tiếp theo đường rãnh size phù hợp.",
       storage: "Bảo quản nơi khô ráo, thoáng mát. Tránh ngâm nước nóng hoặc phơi trực tiếp dưới ánh nắng gay gắt quá lâu để đảm bảo tuổi thọ đàn hồi của đệm PU.",
-      colors: "Đa dạng (Đen cá tính, Xám thể thao, Xanh rêu năng động, Cam nhiệt huyết, Hồng pastel)",
+      colors: "Đen, Xám, Trắng, Vàng, Be",
       warning: "Tránh xa lửa; không sử dụng miếng lót với mục đích khác.",
       origin: "Trung Quốc",
       malePriceRange: "35.000 - 50.000 (Size: 38-47)",
@@ -51,7 +51,7 @@ export const initialData = {
           name: "Lót Giày Nam - Bản Tiêu Chuẩn 4D",
           price: 35000,
           sizes: ["38", "39", "40", "41", "42", "43", "44", "45", "46", "47"],
-          colors: ["Đen Cá Tính", "Xám Thể Thao", "Xanh Rêu"],
+          colors: ["Đen", "Xám", "Trắng", "Vàng", "Be"],
           description: "Êm ái hàng ngày, giảm đau gót chân, vạch cắt từ size 38 đến 47",
           inStock: 999
         },
@@ -61,7 +61,7 @@ export const initialData = {
           name: "Lót Giày Nam - Bản Nâng Cấp Pro Đệm Khí 4D",
           price: 50000,
           sizes: ["38", "39", "40", "41", "42", "43", "44", "45", "46", "47"],
-          colors: ["Đen Pro", "Vàng Thể Thao Sport", "Xanh Navy Năng Động"],
+          colors: ["Đen", "Xám", "Trắng", "Vàng", "Be"],
           description: "Đệm khí tổ ong cao cấp trợ lực gót + U-Cup ôm sát gót chân chống lật cổ chân khi chạy bộ",
           inStock: 820
         },
@@ -71,7 +71,7 @@ export const initialData = {
           name: "Lót Giày Nữ - Bản Tiêu Chuẩn 4D",
           price: 25000,
           sizes: ["35", "36", "37", "38", "39", "40", "41"],
-          colors: ["Hồng Pastel", "Đen", "Be Tự Nhiên"],
+          colors: ["Đen", "Xám", "Trắng", "Vàng", "Be"],
           description: "Mềm mại như dẫm trên mây, chống thốn gót, vừa vặn giày sneaker & búp bê",
           inStock: 950
         },
@@ -81,7 +81,7 @@ export const initialData = {
           name: "Lót Giày Nữ - Bản Nâng Cấp Pro Siêu Êm 4D",
           price: 45000,
           sizes: ["35", "36", "37", "38", "39", "40", "41"],
-          colors: ["Hồng Sakura", "Tím Lavender", "Đen Tuyền"],
+          colors: ["Đen", "Xám", "Trắng", "Vàng", "Be"],
           description: "Chất liệu PU Foam đàn hồi chậm + Đệm massage vòm bàn chân, đi bộ 10.000 bước không mỏi",
           inStock: 760
         }

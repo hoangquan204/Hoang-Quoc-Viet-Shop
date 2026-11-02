@@ -52,7 +52,7 @@ export default function App() {
   // Selection states
   const [selectedVariant, setSelectedVariant] = useState(currentProduct?.variants?.[0] || null);
   const [selectedSize, setSelectedSize] = useState('42');
-  const [selectedColor, setSelectedColor] = useState('Đen Pro');
+  const [selectedColor, setSelectedColor] = useState('Đen');
   const [quantity, setQuantity] = useState(1);
 
   // Modals

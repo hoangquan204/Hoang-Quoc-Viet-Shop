@@ -22,7 +22,7 @@ export default function ProductInfo({
     ? ['38', '39', '40', '41', '42', '43', '44', '45', '46', '47'] 
     : ['35', '36', '37', '38', '39', '40', '41']);
 
-  const currentColors = currentVariant.colors || ['Đen', 'Xám', 'Xanh Rêu'];
+  const currentColors = currentVariant.colors || ['Đen', 'Xám', 'Trắng', 'Vàng', 'Be'];
 
   const formatPrice = (num) => {
     return new Intl.NumberFormat('vi-VN').format(num || 0) + 'đ';
@@ -244,13 +244,12 @@ export default function ProductInfo({
                       : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:border-slate-400'
                   }`}
                 >
-                  <span className={`w-3 h-3 rounded-full border border-slate-400 ${
-                    color.includes('Đen') ? 'bg-slate-950' :
-                    color.includes('Hồng') ? 'bg-pink-400' :
-                    color.includes('Xám') ? 'bg-slate-400' :
-                    color.includes('Xanh') ? 'bg-emerald-600' :
-                    color.includes('Vàng') ? 'bg-amber-400' :
-                    color.includes('Be') ? 'bg-amber-100' : 'bg-slate-500'
+                  <span className={`w-3.5 h-3.5 rounded-full border shadow-2xs ${
+                    color === 'Đen' ? 'bg-slate-950 border-slate-700' :
+                    color === 'Xám' ? 'bg-slate-400 border-slate-500' :
+                    color === 'Trắng' ? 'bg-white border-slate-300' :
+                    color === 'Vàng' ? 'bg-amber-400 border-amber-500' :
+                    color === 'Be' ? 'bg-[#EAD8B1] border-[#C8B282]' : 'bg-slate-500'
                   }`} />
                   <span>{color}</span>
                 </button>
@@ -329,7 +328,7 @@ export default function ProductInfo({
 
           <div className="bg-slate-50 dark:bg-slate-950/80 p-3 rounded-xl border border-slate-200 dark:border-slate-800 flex justify-between">
             <span className="text-slate-600 dark:text-slate-400 font-medium">Màu sắc:</span>
-            <span className="text-slate-900 dark:text-white font-bold text-right">{product?.colors || 'Đa dạng'}</span>
+            <span className="text-slate-900 dark:text-white font-bold text-right">{product?.colors || 'Đen, Xám, Trắng, Vàng, Be'}</span>
           </div>
 
           <div className="bg-slate-50 dark:bg-slate-950/80 p-3 rounded-xl border border-slate-200 dark:border-slate-800 flex justify-between">
