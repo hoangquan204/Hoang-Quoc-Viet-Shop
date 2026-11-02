@@ -208,7 +208,7 @@ export default function OrderForm({
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="Ví dụ: 0988 123 456 (để shiper liên hệ)"
+                placeholder="Ví dụ: 0971 250 891 (để shiper liên hệ)"
                 required
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-rose-500 focus:bg-white dark:focus:bg-slate-900 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 outline-none transition"
               />

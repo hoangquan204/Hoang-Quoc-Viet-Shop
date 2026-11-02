@@ -1,10 +1,12 @@
 import React from 'react';
-import { ShieldCheck, RotateCcw, Truck, Lock, Phone, MapPin } from 'lucide-react';
+import { ShieldCheck, RotateCcw, Truck, Lock, Phone, MapPin, Mail, MessageCircle } from 'lucide-react';
 
 export default function Footer({ siteInfo, onOpenAdmin }) {
   const info = siteInfo || {
     siteName: 'Hoàng Quốc Việt Shop',
-    hotline: '0988.456.789',
+    hotline: '0971.250.891',
+    zalo: '0356280381',
+    email: 'haimyminhquan2123@gmail.com',
     address: 'Hoàng Quốc Việt Shop - Tổng Kho Phụ Kiện Giày - Hà Nội & TP. Hồ Chí Minh',
     logoUrl: 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png'
   };
@@ -84,6 +86,18 @@ export default function Footer({ siteInfo, onOpenAdmin }) {
             <p className="text-[11px] text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
               <MapPin size={13} className="text-rose-500 shrink-0" />
               <span>{info.address}</span>
+            </p>
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+              <Phone size={13} className="text-emerald-500 shrink-0" />
+              <span>Hotline: <a href={`tel:${(info.hotline || '0971.250.891').replace(/[^0-9]/g, '')}`} className="font-semibold text-slate-800 dark:text-white hover:text-rose-600 transition">{info.hotline || '0971.250.891'}</a></span>
+            </p>
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+              <MessageCircle size={13} className="text-sky-500 shrink-0" />
+              <span>Zalo: <a href={`https://zalo.me/${info.zalo || '0356280381'}`} target="_blank" rel="noreferrer" className="font-semibold text-slate-800 dark:text-white hover:text-rose-600 transition">{info.zalo || '0356280381'}</a></span>
+            </p>
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+              <Mail size={13} className="text-rose-500 shrink-0" />
+              <span>Email: <a href={`mailto:${info.email || 'haimyminhquan2123@gmail.com'}`} className="font-semibold text-slate-800 dark:text-white hover:text-rose-600 transition">{info.email || 'haimyminhquan2123@gmail.com'}</a></span>
             </p>
           </div>
 

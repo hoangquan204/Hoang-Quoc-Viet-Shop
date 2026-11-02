@@ -4,7 +4,7 @@ import { CheckCircle, Truck, Phone, X } from 'lucide-react';
 export default function OrderSuccessModal({ order, onClose, siteInfo }) {
   if (!order) return null;
 
-  const hotline = siteInfo?.hotline || '0988.456.789';
+  const hotline = siteInfo?.hotline || '0971.250.891';
 
   const formatPrice = (num) => {
     return new Intl.NumberFormat('vi-VN').format(num || 0) + 'đ';

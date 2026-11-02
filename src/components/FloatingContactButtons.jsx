@@ -2,9 +2,9 @@ import React from 'react';
 import { Phone, MessageCircle } from 'lucide-react';
 
 export default function FloatingContactButtons({ siteInfo }) {
-  const hotline = siteInfo?.hotline || '0988.456.789';
+  const hotline = siteInfo?.hotline || '0971.250.891';
   const cleanPhone = hotline.replace(/[^0-9]/g, '');
-  const zaloNumber = siteInfo?.zalo || cleanPhone || '0988456789';
+  const zaloNumber = siteInfo?.zalo || '0356280381';
   const zaloUrl = `https://zalo.me/${zaloNumber}`;
 
   return (

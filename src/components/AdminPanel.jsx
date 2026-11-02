@@ -38,8 +38,9 @@ export default function AdminPanel({
     tagline: 'Lót Giày Chất Lượng - Siêu Êm Giảm Đau Mỏi Chân',
     logoUrl: 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png',
     announcement: '🔥 SIÊU SALE HÔM NAY: GIẢM ĐẾN 50% + MIỄN PHÍ VẬN CHUYỂN TOÀN QUỐC CHO ĐƠN TỪ 50K! ĐẶT HÀNG NHẬN QUÀ NGAY',
-    hotline: '0988.456.789',
-    zalo: '0988456789',
+    hotline: '0971.250.891',
+    zalo: '0356280381',
+    email: 'haimyminhquan2123@gmail.com',
     address: 'Hoàng Quốc Việt Shop - Tổng Kho Phụ Kiện Giày - Hà Nội & TP. Hồ Chí Minh'
   });
 
@@ -507,7 +508,7 @@ export default function AdminPanel({
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Hotline tư vấn</label>
                   <input
@@ -524,6 +525,16 @@ export default function AdminPanel({
                     type="text"
                     value={siteForm.zalo || ''}
                     onChange={(e) => setSiteForm(prev => ({ ...prev, zalo: e.target.value }))}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-rose-500 rounded-xl px-4 py-2 text-slate-900 dark:text-white outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Email liên hệ</label>
+                  <input
+                    type="email"
+                    value={siteForm.email || ''}
+                    onChange={(e) => setSiteForm(prev => ({ ...prev, email: e.target.value }))}
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-rose-500 rounded-xl px-4 py-2 text-slate-900 dark:text-white outline-none"
                   />
                 </div>

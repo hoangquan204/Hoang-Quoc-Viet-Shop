@@ -6,7 +6,7 @@ export default function Navbar({ siteInfo, onOpenAdmin, currentView, setCurrentV
     siteName: 'Hoàng Quốc Việt Shop',
     mobileSiteName: 'HQV Shop',
     announcement: '🔥 SIÊU SALE HÔM NAY: GIẢM ĐẾN 50% + MIỄN PHÍ VẬN CHUYỂN TOÀN QUỐC CHO ĐƠN TỪ 50K! ĐẶT HÀNG NHẬN QUÀ NGAY',
-    hotline: '0988.456.789',
+    hotline: '0971.250.891',
     logoUrl: 'https://res.cloudinary.com/dldpfpp5/image/upload/v1793622192/Ho%C3%A0ng_Qu%E1%BB%91c_Vi%E1%BB%87t_Shop_L%C3%B3t_Gi%C3%A0y_Ch%E1%BA%A5t_L%C6%B0%E1%BB%A3ng_m63azn.png'
   };
 

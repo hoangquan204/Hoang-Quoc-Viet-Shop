@@ -20,6 +20,15 @@ function getLocalDB() {
           if (!parsed.siteInfo.mobileSiteName) {
             parsed.siteInfo.mobileSiteName = initialData.siteInfo.mobileSiteName;
           }
+          if (!parsed.siteInfo.hotline || parsed.siteInfo.hotline.includes('0988')) {
+            parsed.siteInfo.hotline = initialData.siteInfo.hotline;
+          }
+          if (!parsed.siteInfo.zalo || parsed.siteInfo.zalo.includes('0988')) {
+            parsed.siteInfo.zalo = initialData.siteInfo.zalo;
+          }
+          if (!parsed.siteInfo.email || parsed.siteInfo.email !== initialData.siteInfo.email) {
+            parsed.siteInfo.email = initialData.siteInfo.email;
+          }
           saveLocalDB(parsed);
         }
         return parsed;

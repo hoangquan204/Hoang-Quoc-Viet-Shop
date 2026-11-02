@@ -2,7 +2,8 @@ import React from 'react';
 import { Zap, Phone } from 'lucide-react';
 
 export default function MobileStickyBar({ onBuyNow, siteInfo }) {
-  const hotline = siteInfo?.hotline || '0988.456.789';
+  const hotline = siteInfo?.hotline || '0971.250.891';
+  const cleanPhone = hotline.replace(/[^0-9]/g, '');
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 p-2 sm:hidden shadow-2xl">
@@ -10,7 +11,7 @@ export default function MobileStickyBar({ onBuyNow, siteInfo }) {
         
         {/* Call / Chat Button */}
         <a
-          href={`tel:${hotline}`}
+          href={`tel:${cleanPhone}`}
           className="flex flex-col items-center justify-center w-14 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-rose-600 transition active:scale-95 border border-slate-200 dark:border-slate-700"
           title="Gọi tư vấn"
         >
