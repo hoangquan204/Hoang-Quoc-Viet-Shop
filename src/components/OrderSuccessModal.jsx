@@ -86,7 +86,7 @@ export default function OrderSuccessModal({ order, onClose, siteInfo }) {
               <span className="text-slate-900 dark:text-white font-bold">{order.quantity} đôi</span>
             </div>
             <div className="flex justify-between pt-2 border-t border-slate-100 dark:border-slate-800/60 text-sm">
-              <span className="text-slate-900 dark:text-white font-bold">Tổng thanh toán (COD):</span>
+              <span className="text-slate-900 dark:text-white font-bold">Tổng thanh toán:</span>
               <span className="text-rose-600 dark:text-rose-400 font-black text-base">{formatPrice(order.totalAmount)}</span>
             </div>
           </div>

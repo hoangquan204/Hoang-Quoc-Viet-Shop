@@ -78,7 +78,7 @@ export default function OrderForm({
       quantity,
       unitPrice,
       subtotal,
-      discountAmount: discount,
+      discountAmount: 0,
       shippingFee,
       totalAmount: finalTotal,
       finalAmount: finalTotal,
@@ -144,7 +144,7 @@ export default function OrderForm({
             <ShoppingBag size={13} /> Đặt Hàng Trực Tiếp - Giao Hàng Toàn Quốc
           </span>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-2">
-            Điền Thông Tin Để Nhận <span className="text-rose-600 dark:text-rose-500">Ưu Đãi Hôm Nay</span>
+            Điền Thông Tin <span className="text-rose-600 dark:text-rose-500">Đặt Mua Hàng</span>
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
             Giao hàng toàn quốc • Kiểm tra hàng trước khi thanh toán • Đổi trả trong 7 ngày
@@ -258,52 +258,6 @@ export default function OrderForm({
               />
             </div>
 
-            {/* Payment Method */}
-            <div className="pt-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
-                Phương Thức Thanh Toán:
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
-                  formData.paymentMethod === 'COD'
-                    ? 'bg-rose-50/70 dark:bg-slate-800 border-rose-500 ring-1 ring-rose-500'
-                    : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 hover:border-slate-300'
-                }`}>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="COD"
-                    checked={formData.paymentMethod === 'COD'}
-                    onChange={handleChange}
-                    className="accent-rose-600 w-4 h-4"
-                  />
-                  <div>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white">Thanh toán khi nhận hàng (COD)</p>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400">Kiểm tra lót giày ưng ý rồi thanh toán</p>
-                  </div>
-                </label>
-
-                <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
-                  formData.paymentMethod === 'TRANSFER'
-                    ? 'bg-rose-50/70 dark:bg-slate-800 border-rose-500 ring-1 ring-rose-500'
-                    : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 hover:border-slate-300'
-                }`}>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="TRANSFER"
-                    checked={formData.paymentMethod === 'TRANSFER'}
-                    onChange={handleChange}
-                    className="accent-rose-600 w-4 h-4"
-                  />
-                  <div>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white">Chuyển khoản VietQR</p>
-                    <p className="text-[11px] text-sky-600 dark:text-sky-400">Ưu tiên xử lý đóng gói nhanh</p>
-                  </div>
-                </label>
-              </div>
-            </div>
-
           </div>
 
           {/* RIGHT COLUMN: Order Summary Card */}
@@ -352,8 +306,8 @@ export default function OrderForm({
 
                 <div className="flex justify-between text-slate-600 dark:text-slate-400">
                   <span>Phí vận chuyển:</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                    MIỄN PHÍ VẬN CHUYỂN
+                  <span className="text-rose-600 dark:text-rose-400 font-bold uppercase tracking-wide">
+                    LIÊN HỆ
                   </span>
                 </div>
 
