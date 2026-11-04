@@ -4,7 +4,7 @@
  * (100% Máy chủ Google, Vĩnh viễn không lỗi, Không bao giờ bị Action Required)
  */
 
-var TARGET_EMAIL = "lamhoangquan12c1@gmail.com";
+var TARGET_EMAIL = "lamhoangquan12c1@gmail.com, haimyminhquan2123@gmail.com";
 var SHOP_NAME = "Hoàng Quốc Việt Shop";
 var HOTLINE = "0971.250.891";
 var ZALO = "0356.280.381";
