@@ -10,7 +10,7 @@ export default function ProductMediaGallery({ product }) {
     'https://res.cloudinary.com/dldpfpp5/image/upload/v1793624504/Gemini_Generated_Image_xt9vc7xt9vc7xt9v_qzw6t8.png'
   ];
 
-  const videoUrl = product?.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-athlete-putting-on-his-running-shoes-42999-large.mp4';
+  const videoUrl = product?.videoUrl || 'https://res.cloudinary.com/dldpfpp5/video/upload/v1793807108/gemini_generated_video_57c3603f_go37p5.mp4';
 
   // Build media items list: Video first, then Images
   const mediaItems = [

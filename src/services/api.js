@@ -51,6 +51,9 @@ function getLocalDB() {
           if (!prod.images || prod.images.some(img => img.includes('unsplash'))) {
             prod.images = initialData.products[0].images;
           }
+          if (!prod.videoUrl || prod.videoUrl.includes('mixkit')) {
+            prod.videoUrl = initialData.products[0].videoUrl;
+          }
           if (prod.variants) {
             prod.variants.forEach(v => {
               delete v.originalPrice;

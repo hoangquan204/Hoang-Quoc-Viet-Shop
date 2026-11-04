@@ -911,7 +911,7 @@ export default function AdminPanel({
                     type="url"
                     value={productForm.videoUrl || ''}
                     onChange={(e) => setProductForm(prev => ({ ...prev, videoUrl: e.target.value }))}
-                    placeholder="https://assets.mixkit.co/...mp4"
+                    placeholder="https://res.cloudinary.com/...mp4"
                     className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:border-rose-500 rounded-xl px-4 py-2 text-slate-900 dark:text-white outline-none"
                   />
                 </div>
