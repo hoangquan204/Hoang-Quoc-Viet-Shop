@@ -18,13 +18,31 @@ export default function ProductMediaGallery({ product }) {
     ...images.map((img, idx) => ({ type: 'image', url: img, title: `Ảnh Chi Tiết #${idx + 1}`, thumbnail: img }))
   ];
 
-  const [activeIndex, setActiveIndex] = useState(1); // default to first product photo
+  const [activeIndex, setActiveIndex] = useState(0); // Mặc định là Video (index 0) khi vừa vào web
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const videoRef = useRef(null);
 
   const activeMedia = mediaItems[activeIndex] || mediaItems[0];
+
+  // Tự động phát video ngay khi vừa vào trang web không cần click nút play
+  useEffect(() => {
+    if (activeMedia.type === 'video' && videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.defaultMuted = true;
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch(() => {
+            // Trình duyệt chặn tự phát âm thanh -> video vẫn chạy ở chế độ im lặng (muted)
+          });
+      }
+    }
+  }, [activeIndex, activeMedia.type]);
 
   const handlePrev = () => {
     setActiveIndex(prev => (prev === 0 ? mediaItems.length - 1 : prev - 1));
@@ -90,7 +108,9 @@ export default function ProductMediaGallery({ product }) {
               autoPlay
               loop
               muted={isMuted}
+              defaultMuted
               playsInline
+              preload="auto"
               onClick={togglePlay}
               className="w-full h-full object-cover cursor-pointer"
             />
