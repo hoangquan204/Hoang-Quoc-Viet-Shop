@@ -32,6 +32,12 @@ function getLocalDB() {
           if (!parsed.siteInfo.orderNotifyEmail) {
             parsed.siteInfo.orderNotifyEmail = 'lamhoangquan12c1@gmail.com';
           }
+          if (parsed.siteInfo.orderWebhookUrl === undefined) {
+            parsed.siteInfo.orderWebhookUrl = '';
+          }
+          if (parsed.siteInfo.activatedEmail === undefined) {
+            parsed.siteInfo.activatedEmail = 'lamhoangquan12c1@gmail.com';
+          }
           if (!parsed.siteInfo.announcement || parsed.siteInfo.announcement.includes('SALE') || parsed.siteInfo.announcement.includes('GIẢM')) {
             parsed.siteInfo.announcement = initialData.siteInfo.announcement;
           }
@@ -208,8 +214,40 @@ export const api = {
     }
   },
 
+  // Kích hoạt nhận email thông báo (Chỉ gửi 1 lần duy nhất khi thiết lập hoặc đổi email mới)
+  async requestEmailActivation(email) {
+    const targetEmail = (email || 'lamhoangquan12c1@gmail.com').trim();
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: '🔔 [XÁC NHẬN 1 LẦN DUY NHẤT] Kích Hoạt Nhận Thông Báo Đơn Hàng - Hoàng Quốc Việt Shop',
+          'Thông Báo': `Bạn vừa cài đặt email ${targetEmail} nhận thông báo đơn hàng. Vui lòng nhấn nút "Activate Form" đúng 1 lần này để kích hoạt. Sau khi kích hoạt, mọi đơn hàng mới sẽ tự động gửi thẳng thông tin chi tiết mà không bao giờ gửi lại email Action Required này nữa!`,
+          'Thời Gian': new Date().toLocaleString('vi-VN')
+        })
+      });
+      const data = await res.json();
+      const db = getLocalDB();
+      if (!db.siteInfo) db.siteInfo = {};
+      db.siteInfo.activatedEmail = targetEmail;
+      saveLocalDB(db);
+      console.log('✅ Đã gửi email kích hoạt FormSubmit 1 lần duy nhất:', data);
+      return { success: true, data };
+    } catch (err) {
+      console.warn('⚠️ Lỗi gửi email kích hoạt:', err);
+      return { success: false, error: err.message };
+    }
+  },
+
   async sendOrderEmail(order) {
-    const targetEmail = 'lamhoangquan12c1@gmail.com';
+    const db = getLocalDB();
+    const siteInfo = db.siteInfo || initialData.siteInfo;
+    const targetEmail = (siteInfo.orderNotifyEmail || 'lamhoangquan12c1@gmail.com').trim();
+    const webhookUrl = (siteInfo.orderWebhookUrl || '').trim();
     const formatPrice = (num) => new Intl.NumberFormat('vi-VN').format(num || 0) + 'đ';
 
     const orderTime = new Date().toLocaleString('vi-VN', {
@@ -222,10 +260,46 @@ export const api = {
       second: '2-digit'
     });
 
+    // 1. ƯU TIÊN GỬI QUA GOOGLE APPS SCRIPT WEB APP (100% Google, Vĩnh viễn KHÔNG BAO GIỜ bị gửi email Action Required)
+    if (webhookUrl && webhookUrl.startsWith('http')) {
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify({
+            id: order.id,
+            customerName: order.customerName,
+            phone: order.phone,
+            address: order.address,
+            city: order.city,
+            productName: order.productName,
+            variantTitle: order.variantTitle,
+            size: order.size,
+            color: order.color,
+            quantity: order.quantity,
+            unitPrice: order.unitPrice,
+            totalAmount: order.totalAmount,
+            shippingFeeText: order.shippingFeeText || 'LIÊN HỆ',
+            notes: order.notes,
+            orderTime: orderTime
+          })
+        });
+        console.log('✅ Đã gửi đơn hàng qua Google Apps Script Web App thành công!');
+        return { success: true, method: 'google_apps_script' };
+      } catch (webhookErr) {
+        console.warn('⚠️ Lỗi gửi Google Apps Script Webhook:', webhookErr);
+      }
+    }
+
+    // 2. GỬI QUA FORMSUBMIT
     const emailPayload = {
       _subject: `🔥 [ĐƠN HÀNG MỚI] #${order.id || 'ORD-001'} - ${order.customerName} (${order.phone}) - ${formatPrice(order.totalAmount)}`,
       _template: 'table',
       _captcha: 'false',
+      _autoresponse: 'false',
       'Mã Đơn Hàng': order.id || 'Chưa có',
       'Thời Gian Đặt': orderTime,
       'Họ Và Tên Khách Hàng': order.customerName || 'Khách mua lẻ',
@@ -244,7 +318,6 @@ export const api = {
       'Ghi Chú Cho Shipper': order.notes || 'Không có ghi chú'
     };
 
-    // Gửi qua FormSubmit trực tiếp đến lamhoangquan12c1@gmail.com
     try {
       const res = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
         method: 'POST',

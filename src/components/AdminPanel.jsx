@@ -49,6 +49,9 @@ export default function AdminPanel({
 
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
   const [testResultMsg, setTestResultMsg] = useState('');
+  const [isActivatingEmail, setIsActivatingEmail] = useState(false);
+  const [activationMsg, setActivationMsg] = useState('');
+  const [isCopiedScript, setIsCopiedScript] = useState(false);
 
   // Edit Product State
   const [selectedProductIndex, setSelectedProductIndex] = useState(0);
@@ -94,14 +97,39 @@ export default function AdminPanel({
   const handleSaveSiteInfo = async (e) => {
     e.preventDefault();
     try {
+      const oldEmail = (siteInfo?.orderNotifyEmail || 'lamhoangquan12c1@gmail.com').trim();
+      const newEmail = (siteForm.orderNotifyEmail || 'lamhoangquan12c1@gmail.com').trim();
+      const emailChanged = oldEmail.toLowerCase() !== newEmail.toLowerCase();
+
       const res = await api.updateSiteInfo(siteForm);
       if (res && res.success) {
         setSiteInfo(res.siteInfo);
-        showToast('Đã lưu cấu hình website thành công!');
+        if (emailChanged) {
+          // Chỉ gửi email Action Required 1 lần duy nhất khi thay đổi email nhận
+          api.requestEmailActivation(newEmail).catch(() => {});
+          showToast(`Đã lưu cấu hình và gửi email Action Required kích hoạt 1 lần đến ${newEmail}!`);
+        } else {
+          showToast('Đã lưu cấu hình website thành công!');
+        }
       }
     } catch (err) {
       setSiteInfo(siteForm);
       showToast('Đã cập nhật cấu hình website thành công!');
+    }
+  };
+
+  // Kích hoạt thủ công 1 lần duy nhất
+  const handleRequestActivation = async () => {
+    setIsActivatingEmail(true);
+    setActivationMsg('');
+    try {
+      const email = (siteForm.orderNotifyEmail || 'lamhoangquan12c1@gmail.com').trim();
+      await api.requestEmailActivation(email);
+      setActivationMsg(`📩 Đã gửi 1 email Action Required đến ${email}! Bạn chỉ cần mở Gmail, nhấn nút "Activate Form" đúng một lần này. Sau khi xác nhận, mọi đơn hàng mới sẽ không bao giờ hỏi Action Required nữa!`);
+    } catch (err) {
+      setActivationMsg('⚠️ Lỗi gửi email kích hoạt: ' + err.message);
+    } finally {
+      setIsActivatingEmail(false);
     }
   };
 
@@ -128,7 +156,8 @@ export default function AdminPanel({
     };
     try {
       await api.sendOrderEmail(sampleOrder);
-      setTestResultMsg('✅ Đã gửi email đơn hàng mẫu đến lamhoangquan12c1@gmail.com! Bạn hãy mở hộp thư Gmail để kiểm tra nhé.');
+      const targetEmail = siteForm.orderNotifyEmail || 'lamhoangquan12c1@gmail.com';
+      setTestResultMsg(`✅ Đã gửi đơn hàng test đến ${targetEmail}! Hãy mở hộp thư để kiểm tra nhé.`);
     } catch (err) {
       setTestResultMsg('⚠️ Lỗi khi gửi email: ' + err.message);
     } finally {
@@ -588,7 +617,7 @@ export default function AdminPanel({
               </div>
 
               {/* EMAIL NOTIFICATION CARD */}
-              <div className="mt-6 p-5 rounded-2xl bg-gradient-to-br from-rose-50 via-pink-50 to-amber-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-2 border-rose-500/30 dark:border-rose-500/20 shadow-sm space-y-4">
+              <div className="mt-6 p-5 rounded-2xl bg-gradient-to-br from-rose-50 via-pink-50 to-amber-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-2 border-rose-500/30 dark:border-rose-500/20 shadow-sm space-y-5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rose-200 dark:border-rose-900/50 pb-3">
                   <div className="flex items-center gap-2.5">
                     <div className="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center shadow-md shrink-0">
@@ -600,39 +629,110 @@ export default function AdminPanel({
                         <span className="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Tự động 100%</span>
                       </h4>
                       <p className="text-xs text-slate-600 dark:text-slate-400">
-                        Mỗi khi khách nhấn nút "Đặt Hàng Ngay", hệ thống sẽ gửi toàn bộ thông tin đơn hàng chi tiết vào email của bạn.
+                        Chỉ gửi email kích hoạt (Action Required) một lần duy nhất khi thay đổi email nhận. Các đơn hàng tiếp theo chuyển thẳng chi tiết đơn hàng.
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-                  <div className="space-y-1">
-                    <span className="text-[11px] text-slate-500 font-semibold block">Hộp thư nhận thông báo đơn hàng:</span>
-                    <span className="font-black text-rose-600 dark:text-rose-400 text-base font-mono block">
-                      lamhoangquan12c1@gmail.com
-                    </span>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 pt-0.5">
-                      Chỉ cần kích hoạt (Active Form) một lần duy nhất, mọi đơn hàng khách đặt sẽ tự động chuyển thẳng về email này.
-                    </p>
+                {/* PHẦN 1: CẤU HÌNH EMAIL NHẬN ĐƠN HÀNG */}
+                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex-1">
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                        Hộp thư nhận thông báo đơn hàng:
+                      </label>
+                      <input
+                        type="email"
+                        value={siteForm.orderNotifyEmail || ''}
+                        onChange={(e) => setSiteForm(prev => ({ ...prev, orderNotifyEmail: e.target.value }))}
+                        placeholder="lamhoangquan12c1@gmail.com"
+                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-rose-500 rounded-xl px-3.5 py-2 text-rose-600 dark:text-rose-400 font-bold font-mono text-sm outline-none"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end sm:self-auto pt-1 sm:pt-5">
+                      <button
+                        type="button"
+                        onClick={handleRequestActivation}
+                        disabled={isActivatingEmail}
+                        className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl transition shadow active:scale-95 disabled:opacity-50"
+                        title="Gửi email Action Required một lần duy nhất để xác nhận quyền nhận đơn"
+                      >
+                        <Send size={13} />
+                        <span>{isActivatingEmail ? 'Đang gửi...' : 'Gửi Email Kích Hoạt (1 Lần)'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleSendTestEmail}
+                        disabled={isTestingWebhook}
+                        className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow active:scale-95 disabled:opacity-50"
+                      >
+                        <Send size={13} />
+                        <span>{isTestingWebhook ? 'Đang gửi...' : 'Gửi Thử Email'}</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleSendTestEmail}
-                    disabled={isTestingWebhook}
-                    className="shrink-0 flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow active:scale-95 disabled:opacity-50"
-                  >
-                    <Send size={14} />
-                    <span>{isTestingWebhook ? 'Đang gửi email test...' : 'Gửi Thử Email Đơn Hàng'}</span>
-                  </button>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800">
+                    💡 <strong>Cơ chế kích hoạt:</strong> Khi bạn thay đổi địa chỉ email ở trên và bấm <em>Lưu Cập Nhật</em>, hệ thống sẽ gửi <strong>đúng 1 email Action Required duy nhất</strong> đến hòm thư đó. Sau khi bạn vào Gmail bấm <em>Activate Form</em>, mọi đơn hàng mới khách đặt sẽ gửi thẳng nội dung đơn hàng, không bao giờ gửi lại email Action Required nữa.
+                  </div>
+
+                  {activationMsg && (
+                    <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 p-2.5 rounded-xl border border-amber-200 dark:border-amber-800">
+                      {activationMsg}
+                    </p>
+                  )}
+
+                  {testResultMsg && (
+                    <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                      {testResultMsg}
+                    </p>
+                  )}
                 </div>
 
-                {testResultMsg && (
-                  <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
-                    {testResultMsg}
+                {/* PHẦN 2: GOOGLE APPS SCRIPT WEB APP (VĨNH VIỄN KHÔNG BAO GIỜ BỊ ACTION REQUIRED) */}
+                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <h5 className="text-xs font-black uppercase text-slate-800 dark:text-slate-200">
+                        Google Apps Script Web App (Khuyên dùng - 100% không bị Action Required)
+                      </h5>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const scriptCode = `// HOÀNG QUỐC VIỆT SHOP - GOOGLE APPS SCRIPT\nvar TARGET_EMAIL = "${siteForm.orderNotifyEmail || 'lamhoangquan12c1@gmail.com'}";\nfunction doPost(e) {\n  var data = {};\n  try { data = JSON.parse(e.postData.contents); } catch(err) { data = e.parameter || {}; }\n  MailApp.sendEmail({\n    to: TARGET_EMAIL,\n    subject: "🔥 [ĐƠN HÀNG MỚI] #" + (data.id || "") + " - " + (data.customerName || "") + " (" + (data.phone || "") + ")",\n    htmlBody: "<h3>Đơn hàng mới từ website</h3><p>Khách: <b>" + (data.customerName || "") + "</b> - SĐT: <b>" + (data.phone || "") + "</b></p><p>Địa chỉ: " + (data.address || "") + ", " + (data.city || "") + "</p><p>Sản phẩm: " + (data.productName || "") + " (" + (data.variantTitle || "") + ") - SL: " + (data.quantity || 1) + "</p><p>Tổng tiền: <b>" + Number(data.totalAmount || 0).toLocaleString("vi-VN") + "đ</b></p>"\n  });\n  return ContentService.createTextOutput(JSON.stringify({success:true})).setMimeType(ContentService.MimeType.JSON);\n}`;
+                        navigator.clipboard.writeText(scriptCode);
+                        setIsCopiedScript(true);
+                        setTimeout(() => setIsCopiedScript(false), 3000);
+                      }}
+                      className="flex items-center gap-1 text-[11px] font-bold text-rose-600 hover:text-rose-700 bg-rose-50 dark:bg-rose-950/40 px-2.5 py-1 rounded-lg border border-rose-200 dark:border-rose-900"
+                    >
+                      {isCopiedScript ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
+                      <span>{isCopiedScript ? 'Đã sao chép mã!' : 'Sao chép mã Google Apps Script'}</span>
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] text-slate-500 font-semibold block mb-1">
+                      URL Web App Google (nếu có):
+                    </label>
+                    <input
+                      type="url"
+                      value={siteForm.orderWebhookUrl || ''}
+                      onChange={(e) => setSiteForm(prev => ({ ...prev, orderWebhookUrl: e.target.value }))}
+                      placeholder="https://script.google.com/macros/s/.../exec"
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-rose-500 rounded-xl px-3.5 py-2 text-xs font-mono outline-none"
+                    />
+                  </div>
+
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    * Nếu dán Web App URL vào đây, đơn hàng sẽ được gửi thẳng qua máy chủ Google của bạn: siêu nhanh, cực kỳ ổn định và <strong>hoàn toàn không cần click xác nhận Action Required</strong>.
                   </p>
-                )}
+                </div>
               </div>
 
               <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end">
