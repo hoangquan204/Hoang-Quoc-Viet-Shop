@@ -32,8 +32,8 @@ function getLocalDB() {
           if (!parsed.siteInfo.orderNotifyEmail) {
             parsed.siteInfo.orderNotifyEmail = 'lamhoangquan12c1@gmail.com';
           }
-          if (parsed.siteInfo.orderWebhookUrl === undefined) {
-            parsed.siteInfo.orderWebhookUrl = '';
+          if (!parsed.siteInfo.orderWebhookUrl) {
+            parsed.siteInfo.orderWebhookUrl = 'https://script.google.com/macros/s/AKfycbxTjIEDkMqAkxiKrM8lwfO8BXPQIGB1gLXPsb50u0YKtgmWNUTcSFjSaQiAYMoMxNaV/exec';
           }
           if (parsed.siteInfo.activatedEmail === undefined) {
             parsed.siteInfo.activatedEmail = 'lamhoangquan12c1@gmail.com';
@@ -247,7 +247,7 @@ export const api = {
     const db = getLocalDB();
     const siteInfo = db.siteInfo || initialData.siteInfo;
     const targetEmail = (siteInfo.orderNotifyEmail || 'lamhoangquan12c1@gmail.com').trim();
-    const webhookUrl = (siteInfo.orderWebhookUrl || '').trim();
+    const webhookUrl = (siteInfo.orderWebhookUrl || 'https://script.google.com/macros/s/AKfycbxTjIEDkMqAkxiKrM8lwfO8BXPQIGB1gLXPsb50u0YKtgmWNUTcSFjSaQiAYMoMxNaV/exec').trim();
     const formatPrice = (num) => new Intl.NumberFormat('vi-VN').format(num || 0) + 'đ';
 
     const orderTime = new Date().toLocaleString('vi-VN', {

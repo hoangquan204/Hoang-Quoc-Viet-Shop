@@ -44,6 +44,7 @@ export default function AdminPanel({
     email: 'haimyminhquan2123@gmail.com',
     address: 'Hoàng Quốc Việt Shop - Tổng Kho Phụ Kiện Giày - Hà Nội & TP. Hồ Chí Minh',
     orderNotifyEmail: 'lamhoangquan12c1@gmail.com',
+    orderWebhookUrl: 'https://script.google.com/macros/s/AKfycbxTjIEDkMqAkxiKrM8lwfO8BXPQIGB1gLXPsb50u0YKtgmWNUTcSFjSaQiAYMoMxNaV/exec',
     ...(siteInfo || {})
   }));
 
